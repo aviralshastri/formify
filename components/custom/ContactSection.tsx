@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
-import { Mail, User, Send, CheckCircle2, AlertTriangle } from 'lucide-react';
+"use client"
+
+import React from 'react';
+import { useState } from 'react';
+import { Mail, User, Send, Loader2, Phone } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     message: ''
   });
   const [submissionStatus, setSubmissionStatus] = useState(null);
-  const [notification, setNotification] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,135 +32,166 @@ const ContactSection = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmissionStatus('loading');
-    setNotification(null);
 
     try {
-      // Simulated API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      setNotification({
-        type: 'success',
-        message: 'Message sent successfully!',
-        description: 'We will get back to you soon.'
+      toast.success('Message sent successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
       });
       
       setSubmissionStatus('success');
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ name: '', email: '', phone: '', message: '' });
     } catch (error) {
-      setNotification({
-        type: 'error',
-        message: 'Message sending failed',
-        description: 'Please try again later.'
+      toast.error('Something went wrong. Please try again.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
       });
       setSubmissionStatus('error');
+    } finally {
+      setSubmissionStatus(null);
     }
   };
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-br from-blue-50 to-blue-100">
-      {notification && (
-        <div className={`
-          fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg
-          ${notification.type === 'success' 
-            ? 'bg-green-100 border-green-400 text-green-800' 
-            : 'bg-red-100 border-red-400 text-red-800'}
-        `}>
-          <div className="flex items-center">
-            {notification.type === 'success' 
-              ? <CheckCircle2 className="mr-2 text-green-500" /> 
-              : <AlertTriangle className="mr-2 text-red-500" />}
-            <div>
-              <p className="font-bold">{notification.message}</p>
-              <p className="text-sm">{notification.description}</p>
-            </div>
-          </div>
-        </div>
-      )}
-      <div className="container mx-auto">
-        <h2 className="text-4xl font-extrabold text-center mb-16 text-gray-800">
-          Let's Connect
-        </h2>
-        <Card className="max-w-lg mx-auto shadow-2xl transform transition-transform hover:scale-[1.02]">
-          <CardContent className="p-10">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <Input 
-                    type="text" 
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="First Name" 
-                    className="pl-10"
-                    required
-                  />
-                </div>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <Input 
-                    type="email" 
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Email Address" 
-                    className="pl-10"
-                    required
-                  />
+    <section className="py-24 px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <ToastContainer
+        position="bottom-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      
+      <div className="container max-w-6xl mx-auto">
+        <Card className="max-w-4xl mx-auto">
+          <CardContent className="p-0">
+            <div className="flex flex-col lg:flex-row w-full">
+              <div className="hidden lg:flex flex-col items-center justify-center p-12 lg:w-1/3">
+                <div className="space-y-6 text-center">
+                  <h2 className="text-3xl font-bold">Your Logo</h2>
+                  <p className="text-muted-foreground">
+                    Get in touch with us for any questions or inquiries.
+                  </p>
                 </div>
               </div>
-              
-              <div className="relative">
-                <Textarea 
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Write your message here..." 
-                  className="resize-y min-h-[150px] w-full"
-                  required
-                />
+
+              <div className="hidden lg:block">
+                <Separator orientation="vertical" className="h-full" />
               </div>
-              
-              <Button 
-                type="submit" 
-                disabled={submissionStatus === 'loading'}
-                className={`
-                  w-full group transition-all duration-300
-                  ${submissionStatus === 'loading' 
-                    ? 'bg-gray-400 cursor-not-allowed' 
-                    : 'bg-blue-600 hover:bg-blue-700'}
-                `}
-              >
-                {submissionStatus === 'loading' ? (
-                  <div className="flex items-center">
-                    <svg 
-                      className="animate-spin h-5 w-5 mr-3" 
-                      viewBox="0 0 24 24"
-                    >
-                      <circle 
-                        className="opacity-25" 
-                        cx="12" 
-                        cy="12" 
-                        r="10" 
-                        stroke="currentColor" 
-                        strokeWidth="4"
-                      ></circle>
-                      <path 
-                        className="opacity-75" 
-                        fill="currentColor" 
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Sending...
+
+              <div className="p-8 lg:w-2/3 w-full">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-semibold tracking-tight">Contact Us</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Fill out the form below and we'll get back to you as soon as possible.
+                    </p>
                   </div>
-                ) : (
-                  <>
-                    <Send className="mr-2 group-hover:animate-bounce" />
-                    Send Message
-                  </>
-                )}
-              </Button>
-            </form>
+
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Name</Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="name"
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          placeholder="John Doe"
+                          className="pl-10 w-full"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="email"
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          placeholder="john@example.com"
+                          className="pl-10 w-full"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="phone"
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          placeholder="+1 (555) 000-0000"
+                          className="pl-10 w-full"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Message</Label>
+                      <Textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        placeholder="Write your message here..."
+                        className="min-h-[150px] resize-none w-full"
+                        required
+                      />
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={submissionStatus === 'loading'}
+                    >
+                      {submissionStatus === 'loading' ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="mr-2 h-4 w-4" />
+                          Send Message
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

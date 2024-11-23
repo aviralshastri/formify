@@ -1,99 +1,149 @@
-import React, { useState } from 'react';
-import { Check, Star } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+"use client";
 
-const plans = [
-  {
-    name: "Basic",
-    price: "$9",
-    features: ["100 AI-generated forms", "Basic analytics", "Email support"],
-    bgColor: "from-gray-100 to-gray-200",
-    recommended: false
-  },
-  {
-    name: "Pro",
-    price: "$29",
-    features: ["Unlimited AI-generated forms", "Advanced analytics", "Priority support"],
-    bgColor: "from-blue-100 to-blue-200",
-    recommended: true
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    features: ["Custom AI model training", "Dedicated account manager", "SLA guarantees"],
-    bgColor: "from-purple-100 to-purple-200",
-    recommended: false
-  },
-];
+import { ArrowRight, CircleCheck } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const PricingSection = () => {
-  const [selectedPlan, setSelectedPlan] = useState(null);
-
   return (
-    <section className="py-20 px-4 bg-gray-50">
-      <div className="container mx-auto">
-        <h2 className="text-4xl font-extrabold text-center mb-16 text-gray-800">
-          Choose Your Plan
-        </h2>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {plans.map((plan, index) => (
-            <Card 
-              key={index} 
-              className={`
-                flex flex-col overflow-hidden 
-                bg-gradient-to-br ${plan.bgColor}
-                border-2 ${selectedPlan === plan.name ? 'border-blue-500' : 'border-transparent'}
-                hover:shadow-xl transition-all duration-300
-              `}
-              onClick={() => setSelectedPlan(plan.name)}
-            >
-              {plan.recommended && (
-                <div className="absolute top-0 right-0 m-2">
-                  <Badge variant="secondary" className="flex items-center">
-                    <Star className="w-4 h-4 mr-1 text-yellow-500" />
-                    Recommended
-                  </Badge>
-                </div>
-              )}
+    <section className="py-20" id={"pricing"}>
+      <div className="container">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 text-center">
+          <h2 className="text-pretty text-4xl font-bold lg:text-6xl">
+            Pricing Plans
+          </h2>
+          <p className="text-muted-foreground lg:text-xl">
+            Choose a plan that fits your needs and start building smarter forms today.
+          </p>
+          <div className="flex flex-col items-stretch gap-6 md:flex-row">
+            {/* Free Plan */}
+            <Card className="flex w-80 flex-col justify-between text-left">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-800">
-                  {plan.name}
+                <CardTitle>
+                  <p>Free</p>
                 </CardTitle>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <p className="text-5xl font-extrabold mb-6 text-gray-900">
-                  {plan.price}
-                  {plan.price !== 'Custom' && <span className="text-base">/mo</span>}
+                <p className="text-sm text-muted-foreground">
+                  Ideal for individuals and hobby projects
                 </p>
-                <ul className="space-y-3">
-                  {plan.features.map((feature, fIndex) => (
-                    <li 
-                      key={fIndex} 
-                      className="flex items-center text-gray-700"
-                    >
-                      <Check className="w-5 h-5 mr-2 text-green-500" />
-                      {feature}
-                    </li>
-                  ))}
+                <span className="text-4xl font-bold">$0</span>
+              </CardHeader>
+              <CardContent>
+                <Separator className="mb-6" />
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Basic form templates</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Up to 5 active forms</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Basic analytics</span>
+                  </li>
                 </ul>
               </CardContent>
-              <CardFooter>
-                <Button 
-                  className={`
-                    w-full 
-                    ${selectedPlan === plan.name 
-                      ? 'bg-blue-600 hover:bg-blue-700' 
-                      : 'bg-gray-800 hover:bg-gray-900'
-                    }
-                  `}
-                >
-                  {selectedPlan === plan.name ? 'Selected' : 'Choose Plan'}
+              <CardFooter className="mt-auto">
+                <Button className="w-full">
+                  Get Started
+                  <ArrowRight className="ml-2 size-4" />
                 </Button>
               </CardFooter>
             </Card>
-          ))}
+
+            {/* Pro Plan */}
+            <Card className="flex w-80 flex-col justify-between text-left">
+              <CardHeader>
+                <CardTitle>
+                  <p>Pro</p>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Perfect for small businesses and professionals
+                </p>
+                <span className="text-4xl font-bold">$5</span>
+              </CardHeader>
+              <CardContent>
+                <Separator className="mb-6" />
+                <p className="mb-3 text-lg font-semibold">
+                  Everything in Free +
+                </p>
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Unlimited forms</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>AI-powered field suggestions</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Advanced analytics</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Email notifications</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter className="mt-auto">
+                <Button className="w-full">
+                  Get Started
+                  <ArrowRight className="ml-2 size-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Plus Plan */}
+            <Card className="flex w-80 flex-col justify-between text-left">
+              <CardHeader>
+                <CardTitle>
+                  <p>Plus</p>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Best for teams and enterprises
+                </p>
+                <span className="text-4xl font-bold">$30</span>
+              </CardHeader>
+              <CardContent>
+                <Separator className="mb-6" />
+                <p className="mb-3 text-lg font-semibold">Everything in Pro +</p>
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Team collaboration tools</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Custom branding</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Priority support</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CircleCheck className="size-4" />
+                    <span>Integrations with popular tools</span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter className="mt-auto">
+                <Button className="w-full">
+                  Get Started
+                  <ArrowRight className="ml-2 size-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
         </div>
       </div>
     </section>

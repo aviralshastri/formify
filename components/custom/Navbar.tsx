@@ -1,21 +1,7 @@
 import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import {
   Sheet,
   SheetContent,
@@ -24,6 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const Navbar = () => {
   return (
@@ -37,7 +24,7 @@ const Navbar = () => {
                 className="w-8"
                 alt="logo"
               />
-              <span className="text-xl font-bold">Shadcn Blocks</span>
+              <span className="text-xl font-bold">Formify</span>
             </div>
             <div className="flex items-center">
               <a
@@ -48,7 +35,7 @@ const Navbar = () => {
                     variant: "ghost",
                   })
                 )}
-                href="#"
+                href="/#"
               >
                 Home
               </a>
@@ -60,7 +47,7 @@ const Navbar = () => {
                     variant: "ghost",
                   })
                 )}
-                href="#"
+                href="/builder/editor"
               >
                 Builder
               </a>
@@ -72,9 +59,9 @@ const Navbar = () => {
                     variant: "ghost",
                   })
                 )}
-                href="#"
+                href="/#features"
               >
-                Pricing
+                Features
               </a>
               <a
                 className={cn(
@@ -84,15 +71,22 @@ const Navbar = () => {
                     variant: "ghost",
                   })
                 )}
-                href="#"
+                href="/#pricing"
               >
-                Blog
+                Pricing
               </a>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant={"outline"}>Log in</Button>
-            <Button>Sign up</Button>
+          <div className="flex gap-2 items-center justify-center">
+            <Link href={"/login"} className="px-4 py-2 border rounded-lg">
+              Log in
+            </Link>
+            <Link
+              href={"/signup"}
+              className="px-4 py-2 border rounded-lg text-white bg-black"
+            >
+              Sign up
+            </Link>
           </div>
         </nav>
         <div className="block lg:hidden">
@@ -103,7 +97,7 @@ const Navbar = () => {
                 className="w-8"
                 alt="logo"
               />
-              <span className="text-xl font-bold">Shadcn Blocks</span>
+              <span className="text-xl font-bold">Formify</span>
             </div>
             <Sheet>
               <SheetTrigger asChild>
@@ -120,105 +114,38 @@ const Navbar = () => {
                         className="w-8"
                         alt="logo"
                       />
-                      <span className="text-xl font-bold">Shadcn Blocks</span>
+                      <span className="text-xl font-bold">Formify</span>
                     </div>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="my-8 flex flex-col gap-4">
-                  <a href="#" className="font-semibold">
+                  <a href="/#" className="font-semibold">
                     Home
                   </a>
-                  <a
-                    className={cn(
-                      "text-muted-foreground",
-                      navigationMenuTriggerStyle,
-                      buttonVariants({
-                        variant: "ghost",
-                      })
-                    )}
-                    href="#"
-                  >
+                  <a href="/builder/editor" className="font-semibold">
                     Builder
                   </a>
-                  <a href="#" className="font-semibold">
-                    Pricing
+                  <a href="/#features" className="font-semibold">
+                    Features
                   </a>
-                  <a href="#" className="font-semibold">
-                    Blog
+                  <a href="/#pricing" className="font-semibold">
+                    Pricing
                   </a>
                 </div>
                 <div className="border-t pt-4">
-                  <div className="grid grid-cols-2 justify-start">
-                    <a
-                      className={cn(
-                        buttonVariants({
-                          variant: "ghost",
-                        }),
-                        "justify-start text-muted-foreground"
-                      )}
-                      href="#"
-                    >
-                      Press
-                    </a>
-                    <a
-                      className={cn(
-                        buttonVariants({
-                          variant: "ghost",
-                        }),
-                        "justify-start text-muted-foreground"
-                      )}
-                      href="#"
-                    >
-                      Contact
-                    </a>
-                    <a
-                      className={cn(
-                        buttonVariants({
-                          variant: "ghost",
-                        }),
-                        "justify-start text-muted-foreground"
-                      )}
-                      href="#"
-                    >
-                      Imprint
-                    </a>
-                    <a
-                      className={cn(
-                        buttonVariants({
-                          variant: "ghost",
-                        }),
-                        "justify-start text-muted-foreground"
-                      )}
-                      href="#"
-                    >
-                      Sitemap
-                    </a>
-                    <a
-                      className={cn(
-                        buttonVariants({
-                          variant: "ghost",
-                        }),
-                        "justify-start text-muted-foreground"
-                      )}
-                      href="#"
-                    >
-                      Legal
-                    </a>
-                    <a
-                      className={cn(
-                        buttonVariants({
-                          variant: "ghost",
-                        }),
-                        "justify-start text-muted-foreground"
-                      )}
-                      href="#"
-                    >
-                      Cookie Settings
-                    </a>
-                  </div>
                   <div className="mt-2 flex flex-col gap-3">
-                    <Button variant={"outline"}>Log in</Button>
-                    <Button>Sign up</Button>
+                    <Link
+                      href={"/login"}
+                      className="px-4 py-2 border rounded-lg"
+                    >
+                      Log in
+                    </Link>
+                    <Link
+                      href={"/signup"}
+                      className="px-4 py-2 border rounded-lg text-white bg-black"
+                    >
+                      Sign up
+                    </Link>
                   </div>
                 </div>
               </SheetContent>
