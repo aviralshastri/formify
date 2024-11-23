@@ -1,93 +1,83 @@
-"use client"
+"use client";
 
-import React from 'react';
-import { useState } from 'react';
-import { Mail, User, Send, Loader2, Phone } from 'lucide-react';
+import React from "react";
+import { useState } from "react";
+import { Mail, User, Send, Loader2, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast, { Toaster } from "react-hot-toast";
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
   });
   const [submissionStatus, setSubmissionStatus] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmissionStatus('loading');
+    setSubmissionStatus("loading");
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast.success('Message sent successfully!', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      toast.success("Message sent successfully!", {
+        duration: 3000,
+        position: "top-center",
       });
-      
-      setSubmissionStatus('success');
-      setFormData({ name: '', email: '', phone: '', message: '' });
+
+      setSubmissionStatus("success");
+      setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
-      toast.error('Something went wrong. Please try again.', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
+      toast.error("Something went wrong. Please try again.", {
+        duration: 3000,
+        position: "top-center",
       });
-      setSubmissionStatus('error');
+      setSubmissionStatus("error");
     } finally {
       setSubmissionStatus(null);
     }
   };
 
   return (
-    <section className="py-24 px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <ToastContainer
-        position="bottom-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
+    <section className="py-24 px-4 bg-background/95">
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+        }}
       />
-      
+
       <div className="container max-w-6xl mx-auto">
         <Card className="max-w-4xl mx-auto">
           <CardContent className="p-0">
             <div className="flex flex-col lg:flex-row w-full">
               <div className="hidden lg:flex flex-col items-center justify-center p-12 lg:w-1/3">
-                <div className="space-y-6 text-center">
-                  <h2 className="text-3xl font-bold">Your Logo</h2>
+                <div className="space-y-6 text-center items-center justify-center flex flex-col">
+                  <img
+                    src="https://www.shadcnblocks.com/images/block/block-1.svg"
+                    className="w-24"
+                    alt="logo"
+                  />
+                  <h2 className="text-3xl font-bold">FORMIFY</h2>
                   <p className="text-muted-foreground">
                     Get in touch with us for any questions or inquiries.
                   </p>
@@ -101,9 +91,12 @@ const ContactSection = () => {
               <div className="p-8 lg:w-2/3 w-full">
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-2xl font-semibold tracking-tight">Contact Us</h3>
+                    <h3 className="text-2xl font-semibold tracking-tight">
+                      Contact Us
+                    </h3>
                     <p className="text-sm text-muted-foreground">
-                      Fill out the form below and we'll get back to you as soon as possible.
+                      Fill out the form below and we'll get back to you as soon
+                      as possible.
                     </p>
                   </div>
 
@@ -174,9 +167,9 @@ const ContactSection = () => {
                     <Button
                       type="submit"
                       className="w-full"
-                      disabled={submissionStatus === 'loading'}
+                      disabled={submissionStatus === "loading"}
                     >
-                      {submissionStatus === 'loading' ? (
+                      {submissionStatus === "loading" ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Sending...

@@ -4,6 +4,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   Type,
@@ -24,6 +25,7 @@ import {
 interface DummyProps {
   label: string;
   type: string;
+  description: string;
 }
 
 const COMPONENT_ICONS = {
@@ -41,7 +43,7 @@ const COMPONENT_ICONS = {
   "Image Component": Image,
 };
 
-const Dummy: React.FC<DummyProps> = ({ label, type }) => {
+const Dummy: React.FC<DummyProps> = ({ label, description = "None", type }) => {
   const IconComponent = COMPONENT_ICONS[type] || Type;
 
   return (
@@ -49,9 +51,10 @@ const Dummy: React.FC<DummyProps> = ({ label, type }) => {
       <CardHeader className="flex flex-row items-center space-x-4">
         <IconComponent className="h-6 w-6 text-primary" />
         <div>
-          <CardTitle>{label}</CardTitle>
-          <CardDescription className="text-muted-foreground mt-1">
-            {type} Component
+          <CardTitle className="text-lg">{label}</CardTitle>
+          <CardDescription>
+            <p className="text-muted-foreground text-md">{description}</p>
+            <p className="text-sm">({type} Component)</p>
           </CardDescription>
         </div>
       </CardHeader>
