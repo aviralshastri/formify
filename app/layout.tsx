@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { geistSans, geistMono } from "@/lib/fonts";
+import { DataProvider } from "@/context/DataContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,12 +14,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <DataProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          {children}
+        </body>
+      </html>
+    </DataProvider>
   );
 }

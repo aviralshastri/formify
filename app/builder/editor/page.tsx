@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -47,7 +47,10 @@ import {
   GripVertical,
   LayoutGrid,
   MousePointer2,
+  Settings,
+  Eye,
 } from "lucide-react";
+import LoadingScreen from "@/components/custom/LoadingScreen";
 
 const FORM_COMPONENTS = [
   {
@@ -127,7 +130,11 @@ function SortableItem({
         <GripVertical className="h-5 w-5" />
       </div>
       <div className="flex-grow">
-        <element.Component label={element.label} type={element.type} description={element.description} />
+        <element.Component
+          label={element.label}
+          type={element.type}
+          description={element.description}
+        />
       </div>
       {!isSelectionMode && (
         <Button
@@ -146,6 +153,7 @@ function SortableItem({
 export default function Editor() {
   const [isComponentDialogOpen, setIsComponentDialogOpen] = useState(false);
   const [isLabelDialogOpen, setIsLabelDialogOpen] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [formElements, setFormElements] = useState<FormElement[]>([]);
   const [currentComponent, setCurrentComponent] = useState<
     (typeof FORM_COMPONENTS)[0] | null
@@ -153,8 +161,41 @@ export default function Editor() {
   const [labelValue, setLabelValue] = useState("");
   const [descriptionValue, setDescriptionValue] = useState("");
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-
   const selectedCount = formElements.filter((el) => el.selected).length;
+
+  useEffect(() => {
+    const storedData = sessionStorage.getItem("formele");
+
+    if (storedData) {
+      const parsedData: FormElement[] = JSON.parse(storedData).map(
+        (element) => ({
+          ...element,
+          Component: Dummy,
+        })
+      );
+
+      if (parsedData && Array.isArray(parsedData)) {
+        setFormElements(parsedData);
+      }
+    }
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem("formele", JSON.stringify(formElements));
+  }, [formElements])
+  
+
+  if (loading) {
+    return (
+      <LoadingScreen
+        description="Fetching the form data..."
+        heading="Please wait, we are preparing your form!"
+      />
+    );
+  }
 
   const toggleSelection = (id: string) => {
     setFormElements((prev) =>
@@ -177,6 +218,15 @@ export default function Editor() {
     setCurrentComponent(component);
     setIsComponentDialogOpen(false);
     setIsLabelDialogOpen(true);
+  };
+
+
+  const handlePreview = () => {
+    sessionStorage.setItem("formele", JSON.stringify(formElements));
+    const newTab = window.open("/builder/preview", "_blank");
+    if (newTab) {
+      newTab.focus();
+    }
   };
 
   const handleAddElement = () => {
@@ -259,10 +309,25 @@ export default function Editor() {
           <span className="hidden md:flex">Add Component</span>
         </Button>
 
+        <div className="flex items-center space-x-6 px-4 py-2 border rounded-lg">
+          <button
+            onClick={() => setIsComponentDialogOpen(true)}
+            className="border p-1 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
+          >
+            <Settings className="h-5 w-5 text-black hidden md:flex" />
+          </button>
+          <button
+            onClick={handlePreview}
+            className="border p-1 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
+          >
+            <Eye className="h-5 w-5 text-black hidden md:flex" />
+          </button>
+        </div>
+
         {isSelectionMode && selectedCount > 0 && (
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500">
-              {selectedCount} item{selectedCount !== 1 ? 's' : ''} selected
+              {selectedCount} item{selectedCount !== 1 ? "s" : ""} selected
             </span>
             <Button
               variant="destructive"
@@ -328,7 +393,10 @@ export default function Editor() {
         </ContextMenu>
       </div>
 
-      <Dialog open={isComponentDialogOpen} onOpenChange={setIsComponentDialogOpen}>
+      <Dialog
+        open={isComponentDialogOpen}
+        onOpenChange={setIsComponentDialogOpen}
+      >
         <DialogContent className="sm:max-w-[700px]">
           <DialogHeader>
             <DialogTitle>Select Form Component</DialogTitle>
