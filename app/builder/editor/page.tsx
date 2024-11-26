@@ -180,7 +180,7 @@ export default function Editor() {
     }
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 500);
+    }, 5000);
   }, []);
 
   useEffect(() => {
