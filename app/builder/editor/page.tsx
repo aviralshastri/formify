@@ -49,8 +49,29 @@ import {
   MousePointer2,
   Settings,
   Eye,
+  X
 } from "lucide-react";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import LoadingScreen from "@/components/custom/LoadingScreen";
+import { Separator } from "@/components/ui/separator";
+import { Image, PaletteIcon, ShareIcon, LockIcon } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const FORM_COMPONENTS = [
   {
@@ -162,6 +183,34 @@ export default function Editor() {
   const [descriptionValue, setDescriptionValue] = useState("");
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const selectedCount = formElements.filter((el) => el.selected).length;
+  const [publishScheduleEnabled, setPublishScheduleEnabled] = useState(false);
+  const [bannerImage, setBannerImage] = useState(null);
+
+  const handleBannerChange = (e) => {
+    const file = e.target.files[0];
+    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+
+    if (file && validTypes.includes(file.type)) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBannerImage({
+          file: file,
+          preview: reader.result,
+        });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert("Please select a valid image (JPEG, PNG, GIF, WEBP)");
+      e.target.value = null;
+    }
+  };
+
+  const clearBannerImage = () => {
+    setBannerImage(null);
+    // Reset file input
+    const fileInput = document.getElementById("banner-upload");
+    if (fileInput) fileInput.value = null;
+  };
 
   useEffect(() => {
     const storedData = sessionStorage.getItem("formele");
@@ -185,8 +234,7 @@ export default function Editor() {
 
   useEffect(() => {
     sessionStorage.setItem("formele", JSON.stringify(formElements));
-  }, [formElements])
-  
+  }, [formElements]);
 
   if (loading) {
     return (
@@ -219,7 +267,6 @@ export default function Editor() {
     setIsComponentDialogOpen(false);
     setIsLabelDialogOpen(true);
   };
-
 
   const handlePreview = () => {
     sessionStorage.setItem("formele", JSON.stringify(formElements));
@@ -310,12 +357,90 @@ export default function Editor() {
         </Button>
 
         <div className="flex items-center space-x-6 px-4 py-2 border rounded-lg">
-          <button
-            onClick={() => setIsComponentDialogOpen(true)}
-            className="border p-1 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
-          >
-            <Settings className="h-5 w-5 text-black hidden md:flex" />
-          </button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <div className="border p-1 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors cursor-pointer">
+                <Settings className="h-5 w-5 text-black hidden md:flex" />
+              </div>
+            </SheetTrigger>
+            <SheetContent className="w-[400px]">
+              <SheetHeader>
+                <SheetTitle className="text-2xl">Form Settings</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col py-4 space-y-4">
+                {/* Basic Information */}
+                <div className="space-y-2">
+                  <div>
+                    <Label className="pl-1">Title</Label>
+                    <Input placeholder="Enter Title" />
+                  </div>
+                  <div>
+                    <Label className="pl-1">Description</Label>
+                    <Input placeholder="Enter Description" />
+                  </div>
+                </div>
+
+                {/* Banner */}
+                <div>
+                  <Label className="pl-1 flex items-center gap-2">
+                    <Image className="h-4 w-4" /> Banner
+                  </Label>
+                  <Input
+                    id="banner-upload"
+                    placeholder="Choose a banner"
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.gif,.webp"
+                    onChange={handleBannerChange}
+                  />
+                  {bannerImage && (
+                    <div className="mt-2 relative">
+                      <img
+                        src={bannerImage.preview}
+                        alt="Banner Preview"
+                        className="w-full h-32 object-cover rounded-md"
+                      />
+                      <button
+                        onClick={clearBannerImage}
+                        className="absolute top-2 right-2 bg-white/50 rounded-full p-1 hover:bg-white/75"
+                      >
+                        <X className="h-4 w-4 text-black" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Publish Schedule */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Publish Schedule</Label>
+                    <Switch
+                      checked={publishScheduleEnabled}
+                      onCheckedChange={setPublishScheduleEnabled}
+                    />
+                  </div>
+                  {publishScheduleEnabled && (
+                    <div className="space-y-2">
+                      <div>
+                        <Label className="pl-1">Start Date & Time</Label>
+                        <Input type="datetime-local" />
+                      </div>
+                      <div>
+                        <Label className="pl-1">End Date & Time</Label>
+                        <Input type="datetime-local" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <SheetFooter>
+                <SheetClose asChild>
+                  <Button type="submit" className="w-full">
+                    Save Changes
+                  </Button>
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
           <button
             onClick={handlePreview}
             className="border p-1 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"

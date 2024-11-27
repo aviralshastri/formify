@@ -57,7 +57,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
 
   return (
     <div className="fixed inset-0 bg-gray-50 flex flex-col items-center justify-center overflow-hidden">
-      <div className="relative w-64 h-64 flex items-center justify-center">
+      <div className="relative w-32 h-32 flex items-center justify-center">
         {formElements.map((element, index) => (
           <div 
             key={index}
@@ -79,9 +79,6 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
         </h2>
         <p className="text-gray-600">
           {description}
-        </p>
-        <p className="text-sm text-gray-500 mt-2">
-          {formElements[currentIconIndex].name}
         </p>
       </div>
     </div>
