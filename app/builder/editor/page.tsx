@@ -185,6 +185,8 @@ export default function Editor() {
   const selectedCount = formElements.filter((el) => el.selected).length;
   const [publishScheduleEnabled, setPublishScheduleEnabled] = useState(false);
   const [bannerImage, setBannerImage] = useState(null);
+  const [useMarkdownFile, setUseMarkdownFile] = useState(false);
+
   const now = new Date();
   const minDateTime = addHours(now, 1);
 
@@ -409,7 +411,11 @@ export default function Editor() {
           <span className="hidden md:flex">Add Component</span>
         </Button>
 
-        <div className={`items-center space-x-6 px-4 py-2 border rounded-lg ${isSelectionMode ? "hidden" :"flex" }`}>
+        <div
+          className={`items-center space-x-6 px-4 py-2 border rounded-lg ${
+            isSelectionMode ? "hidden" : "flex"
+          }`}
+        >
           <Sheet>
             <SheetTrigger asChild>
               <div className="border p-1 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors cursor-pointer">
@@ -427,9 +433,53 @@ export default function Editor() {
                     <Label className="pl-1">Title</Label>
                     <Input placeholder="Enter Title" />
                   </div>
-                  <div>
-                    <Label className="pl-1">Description</Label>
-                    <Input placeholder="Enter Description" />
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <Label
+                        htmlFor="markdown-switch"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Use Markdown File
+                      </Label>
+                      <Switch
+                        id="markdown-switch"
+                        checked={useMarkdownFile}
+                        onCheckedChange={setUseMarkdownFile}
+                      />
+                    </div>
+                    <div>
+                      <Label
+                        htmlFor={
+                          useMarkdownFile ? "markdown-file" : "description"
+                        }
+                        className="pl-1"
+                      >
+                        Description
+                      </Label>
+                      {useMarkdownFile ? (
+                        <Input
+                          id="markdown-file"
+                          type="file"
+                          accept=".md"
+                          className="mt-1"
+                          aria-describedby="file-input-description"
+                        />
+                      ) : (
+                        <Input
+                          id="description"
+                          placeholder="Enter Description"
+                          className="mt-1"
+                        />
+                      )}
+                    </div>
+                    {useMarkdownFile && (
+                      <p
+                        id="file-input-description"
+                        className="text-sm text-muted-foreground"
+                      >
+                        Please attach a .md file for the description.
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -634,6 +684,7 @@ export default function Editor() {
           >
             <Eye className="h-5 w-5 text-black" />
           </button>
+          <Button>Publish</Button>
         </div>
 
         {isSelectionMode && selectedCount > 0 && (
