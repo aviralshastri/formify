@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
+import logo from "@/public/logo.png";
 
 const Navbar = () => {
   return (
@@ -19,12 +21,14 @@ const Navbar = () => {
         <nav className="hidden justify-between lg:flex">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
-              <img
-                src="https://www.shadcnblocks.com/images/block/block-1.svg"
-                className="w-8"
+              <Image
+                src={logo}
+                height={40}
+                width={40}
+                className="rounded-xl"
                 alt="logo"
               />
-              <span className="text-xl font-bold">Formify</span>
+              <span className="text-3xl font-bold">Formify</span>
             </div>
             <div className="flex items-center">
               <a
@@ -92,12 +96,14 @@ const Navbar = () => {
         <div className="block lg:hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img
-                src="https://www.shadcnblocks.com/images/block/block-1.svg"
-                className="w-8"
+              <Image
+                src={logo}
+                height={40}
+                width={40}
+                className="rounded-xl"
                 alt="logo"
               />
-              <span className="text-xl font-bold">Formify</span>
+              <span className="text-2xl font-bold">Formify</span>
             </div>
             <Sheet>
               <SheetTrigger asChild>
@@ -109,12 +115,14 @@ const Navbar = () => {
                 <SheetHeader>
                   <SheetTitle>
                     <div className="flex items-center gap-2">
-                      <img
-                        src="https://www.shadcnblocks.com/images/block/block-1.svg"
-                        className="w-8"
+                      <Image
+                        src={logo}
+                        height={40}
+                        width={40}
+                        className="rounded-xl"
                         alt="logo"
                       />
-                      <span className="text-xl font-bold">Formify</span>
+                      <span className="text-2xl font-bold">Formify</span>
                     </div>
                   </SheetTitle>
                 </SheetHeader>

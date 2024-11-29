@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import toast, { Toaster } from "react-hot-toast";
+import Image from "next/image";
+import logo from "@/public/logo.png";
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -72,9 +74,11 @@ const ContactSection = () => {
             <div className="flex flex-col lg:flex-row w-full">
               <div className="hidden lg:flex flex-col items-center justify-center p-12 lg:w-1/3">
                 <div className="space-y-6 text-center items-center justify-center flex flex-col">
-                  <img
-                    src="https://www.shadcnblocks.com/images/block/block-1.svg"
-                    className="w-24"
+                  <Image
+                    width={100}
+                    height={100}
+                    src={logo}
+                    className="rounded-xl"
                     alt="logo"
                   />
                   <h2 className="text-3xl font-bold">FORMIFY</h2>

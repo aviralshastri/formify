@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { X } from 'lucide-react';
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,6 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "../ui/scroll-area";
 import axios from "axios";
+import chatbotlogo from "@/public/chatbot.png";
+import Image from "next/image";
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -85,13 +87,13 @@ export default function Chatbot() {
 
   return (
     <>
-      <Button
-        className="fixed right-10 bottom-10 rounded-full p-4 shadow-md transition duration-300 transform hover:scale-105"
+      <button
+        className="fixed right-10 bottom-10 rounded-full p-2 shadow-md transition duration-300 transform hover:scale-105 bg-black dark:bg-white"
         onClick={toggleDialog}
         aria-label="Chatbot"
       >
-        Chinchpokli AI
-      </Button>
+        <Image src={chatbotlogo} width={60} height={60} alt="chatbotlogo" />
+      </button>
 
       <div
         className={`fixed right-10 bottom-24 w-96 transition-all duration-300 ease-in-out origin-bottom ${
@@ -105,9 +107,11 @@ export default function Chatbot() {
         <Card className="shadow-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-medium">
-              Bake your form using AI
+              Bake your form using Formitra AI
             </CardTitle>
-            <Button variant="ghost" size="sm" onClick={toggleDialog}> {/* Updated to use toggleDialog */}
+            <Button variant="ghost" size="sm" onClick={toggleDialog}>
+              {" "}
+              {/* Updated to use toggleDialog */}
               <X className="h-4 w-4" />
             </Button>
           </CardHeader>
@@ -159,4 +163,3 @@ export default function Chatbot() {
     </>
   );
 }
-

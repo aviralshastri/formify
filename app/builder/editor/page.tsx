@@ -51,6 +51,7 @@ import {
   Eye,
   X,
   MessageCircleCode,
+  HomeIcon,
 } from "lucide-react";
 import {
   Sheet,
@@ -75,6 +76,9 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { addHours, setHours, setMinutes, isBefore, isEqual } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Chatbot from "@/components/custom/Chatbot";
+import Link from "next/link";
+import Image from "next/image";
+import logo from "@/public/logo-light.png";
 
 const FORM_COMPONENTS = [
   {
@@ -404,15 +408,20 @@ export default function Editor() {
   return (
     <div className="h-screen flex flex-col w-full bg-gray-50">
       <div className="p-4 bg-white shadow-sm border-b border-gray-200 flex justify-between items-center">
-        <Button
-          variant="outline"
-          className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
-          onClick={() => setIsComponentDialogOpen(true)}
-        >
-          <Plus className="h-5 w-5 text-blue-500 hidden md:flex" />
-          <LayoutGrid className="h-5 w-5 text-blue-500 flex md:hidden" />
-          <span className="hidden md:flex">Add Component</span>
-        </Button>
+        <div className="flex flex-row space-x-3 items-center">
+          <Link href={"/"} className="flex items-center rounded-lg border-2 p-1">
+            <HomeIcon size={25}/>
+          </Link>
+          <Button
+            variant="outline"
+            className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+            onClick={() => setIsComponentDialogOpen(true)}
+          >
+            <Plus className="h-5 w-5 text-blue-500 hidden md:flex" />
+            <LayoutGrid className="h-5 w-5 text-blue-500 flex md:hidden" />
+            <span className="hidden md:flex">Add Component</span>
+          </Button>
+        </div>
 
         <div
           className={`items-center space-x-6 px-4 py-2 border rounded-lg ${
@@ -425,7 +434,7 @@ export default function Editor() {
                 <Settings className="h-5 w-5 text-black" />
               </div>
             </SheetTrigger>
-            <SheetContent className="w-[400px]">
+            <SheetContent className="px-4 w-full">
               <SheetHeader>
                 <SheetTitle className="text-2xl">Form Settings</SheetTitle>
               </SheetHeader>
@@ -845,7 +854,7 @@ export default function Editor() {
         </DialogContent>
       </Dialog>
       <div>
-        <Chatbot/>
+        <Chatbot />
       </div>
     </div>
   );

@@ -1,90 +1,121 @@
-const sections = [
-    {
-      title: 'Product',
-      links: [
-        { name: 'Overview', href: '#' },
-        { name: 'Pricing', href: '#' },
-        { name: 'Marketplace', href: '#' },
-        { name: 'Features', href: '#' },
-        { name: 'Integrations', href: '#' },
-        { name: 'Pricing', href: '#' },
-      ],
-    },
-    {
-      title: 'Company',
-      links: [
-        { name: 'About', href: '#' },
-        { name: 'Team', href: '#' },
-        { name: 'Blog', href: '#' },
-        { name: 'Careers', href: '#' },
-        { name: 'Contact', href: '#' },
-        { name: 'Privacy', href: '#' },
-      ],
-    },
-    {
-      title: 'Resources',
-      links: [
-        { name: 'Help', href: '#' },
-        { name: 'Sales', href: '#' },
-        { name: 'Advertise', href: '#' },
-      ],
-    },
-    {
-      title: 'Social',
-      links: [
-        { name: 'Twitter', href: '#' },
-        { name: 'Instagram', href: '#' },
-        { name: 'LinkedIn', href: '#' },
-      ],
-    },
-  ];
-  
-  const Footer = () => {
-    return (
-      <section className="py-6 px-6">
-        <div className="container">
-          <footer>
-            <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
-              <div className="col-span-2 mb-8 lg:mb-0">
-                <img
-                  src="https://www.shadcnblocks.com/images/block/logos/shadcn-ui.svg"
-                  alt="logo"
-                  className="mb-4 h-7"
-                />
-                <p className="font-bold">Components made easy.</p>
-              </div>
-              {sections.map((section, sectionIdx) => (
-                <div key={sectionIdx}>
-                  <h3 className="mb-4 font-bold">{section.title}</h3>
-                  <ul className="space-y-4 text-muted-foreground">
-                    {section.links.map((link, linkIdx) => (
-                      <li
-                        key={linkIdx}
-                        className="font-medium hover:text-primary"
-                      >
-                        <a href={link.href}>{link.name}</a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+import Image from "next/image";
+import Link from "next/link";
+import logo from "@/public/logo.png";
+
+const footerSections = [
+  {
+    title: 'Product',
+    links: [
+      { name: 'Overview', href: '/overview' },
+      { name: 'Pricing', href: '/pricing' },
+      { name: 'Marketplace', href: '/marketplace' },
+      { name: 'Features', href: '/features' },
+      { name: 'Integrations', href: '/integrations' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { name: 'About', href: '/about' },
+      { name: 'Team', href: '/team' },
+      { name: 'Blog', href: '/blog' },
+      { name: 'Careers', href: '/careers' },
+      { name: 'Contact', href: '/contact' },
+    ],
+  },
+  {
+    title: 'Resources',
+    links: [
+      { name: 'Help Center', href: '/help' },
+      { name: 'Sales', href: '/sales' },
+      { name: 'Support', href: '/support' },
+    ],
+  },
+  {
+    title: 'Connect',
+    links: [
+      { name: 'Twitter', href: 'https://twitter.com/formify', external: true },
+      { name: 'LinkedIn', href: 'https://linkedin.com/company/formify', external: true },
+      { name: 'GitHub', href: 'https://github.com/formify', external: true },
+    ],
+  },
+];
+
+const Footer = () => {
+  return (
+    <footer className="bg-white py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+          {/* Logo and Company Info */}
+          <div className="col-span-1 lg:col-span-2 flex flex-col items-start space-y-4">
+            <div className="flex items-center space-x-4">
+              <Image
+                src={logo}
+                width={50}
+                height={50}
+                alt="Formify Logo"
+                className="rounded-lg"
+              />
+              <h2 className="text-xl font-bold text-gray-900">Formify</h2>
             </div>
-            <div className="mt-24 flex flex-col justify-between gap-4 border-t pt-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
-              <p>© 2024 Shadcn. All rights reserved.</p>
-              <ul className="flex gap-4">
-                <li className="underline hover:text-primary">
-                  <a href="#"> Terms and Conditions</a>
-                </li>
-                <li className="underline hover:text-primary">
-                  <a href="#"> Privacy Policy</a>
-                </li>
+            <p className="text-sm text-gray-600">
+              Simplifying form creation and management for businesses of all sizes.
+            </p>
+          </div>
+
+          {/* Footer Sections */}
+          {footerSections.map((section, index) => (
+            <div 
+              key={index} 
+              className="col-span-1 lg:col-span-1"
+            >
+              <h3 className="text-sm font-semibold text-gray-900 mb-4">
+                {section.title}
+              </h3>
+              <ul className="space-y-3">
+                {section.links.map((link, linkIndex) => (
+                  <li key={linkIndex}>
+                    <Link 
+                      href={link.href}
+                      target={link.external ? '_blank' : undefined}
+                      rel={link.external ? 'noopener noreferrer' : undefined}
+                      className="text-sm text-gray-600 hover:text-primary-600 transition-colors duration-200"
+                    >
+                      {link.name}
+                      {link.external && (
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      )}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
-          </footer>
+          ))}
         </div>
-      </section>
-    );
-  };
-  
-  export default Footer;
-  
+
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <p className="text-sm text-gray-600">
+            © {new Date().getFullYear()} Formify. All rights reserved.
+          </p>
+          <div className="flex space-x-4">
+            <Link 
+              href="/terms" 
+              className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
+            >
+              Terms of Service
+            </Link>
+            <Link 
+              href="/privacy" 
+              className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
+            >
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
