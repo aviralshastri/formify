@@ -50,6 +50,7 @@ import {
   Settings,
   Eye,
   X,
+  MessageCircleCode,
 } from "lucide-react";
 import {
   Sheet,
@@ -72,6 +73,8 @@ import {
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
 import { addHours, setHours, setMinutes, isBefore, isEqual } from "date-fns";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import Chatbot from "@/components/custom/Chatbot";
 
 const FORM_COMPONENTS = [
   {
@@ -284,7 +287,7 @@ export default function Editor() {
     }
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 5000);
+    }, 1000);
   }, []);
 
   useEffect(() => {
@@ -426,256 +429,258 @@ export default function Editor() {
               <SheetHeader>
                 <SheetTitle className="text-2xl">Form Settings</SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col py-4 space-y-4">
-                {/* Basic Information */}
-                <div className="space-y-2">
-                  <div>
-                    <Label className="pl-1">Title</Label>
-                    <Input placeholder="Enter Title" />
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <Label
-                        htmlFor="markdown-switch"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        Use Markdown File
-                      </Label>
-                      <Switch
-                        id="markdown-switch"
-                        checked={useMarkdownFile}
-                        onCheckedChange={setUseMarkdownFile}
-                      />
-                    </div>
+              <ScrollArea className="h-full mb-10">
+                <div className="flex flex-col py-4 space-y-4">
+                  {/* Basic Information */}
+                  <div className="space-y-2">
                     <div>
-                      <Label
-                        htmlFor={
-                          useMarkdownFile ? "markdown-file" : "description"
-                        }
-                        className="pl-1"
-                      >
-                        Description
-                      </Label>
-                      {useMarkdownFile ? (
-                        <Input
-                          id="markdown-file"
-                          type="file"
-                          accept=".md"
-                          className="mt-1"
-                          aria-describedby="file-input-description"
+                      <Label className="pl-1">Title</Label>
+                      <Input placeholder="Enter Title" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label
+                          htmlFor="markdown-switch"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Use Markdown File
+                        </Label>
+                        <Switch
+                          id="markdown-switch"
+                          checked={useMarkdownFile}
+                          onCheckedChange={setUseMarkdownFile}
                         />
-                      ) : (
-                        <Input
-                          id="description"
-                          placeholder="Enter Description"
-                          className="mt-1"
-                        />
+                      </div>
+                      <div>
+                        <Label
+                          htmlFor={
+                            useMarkdownFile ? "markdown-file" : "description"
+                          }
+                          className="pl-1"
+                        >
+                          Description
+                        </Label>
+                        {useMarkdownFile ? (
+                          <Input
+                            id="markdown-file"
+                            type="file"
+                            accept=".md"
+                            className="mt-1"
+                            aria-describedby="file-input-description"
+                          />
+                        ) : (
+                          <Input
+                            id="description"
+                            placeholder="Enter Description"
+                            className="mt-1"
+                          />
+                        )}
+                      </div>
+                      {useMarkdownFile && (
+                        <p
+                          id="file-input-description"
+                          className="text-sm text-muted-foreground"
+                        >
+                          Please attach a .md file for the description.
+                        </p>
                       )}
                     </div>
-                    {useMarkdownFile && (
-                      <p
-                        id="file-input-description"
-                        className="text-sm text-muted-foreground"
-                      >
-                        Please attach a .md file for the description.
-                      </p>
+                  </div>
+
+                  {/* Banner */}
+                  <div className="space-y-1">
+                    <Label className="pl-1 flex items-center">Banner</Label>
+                    <Input
+                      id="banner-upload"
+                      placeholder="Choose a banner"
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.gif,.webp"
+                      onChange={handleBannerChange}
+                    />
+                    {bannerImage && (
+                      <div className="mt-2 relative">
+                        <img
+                          src={bannerImage.preview}
+                          alt="Banner Preview"
+                          className="w-full h-32 object-cover rounded-md"
+                        />
+                        <button
+                          onClick={clearBannerImage}
+                          className="absolute top-2 right-2 bg-white/50 rounded-full p-1 hover:bg-white/75"
+                        >
+                          <X className="h-4 w-4 text-black" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Publish Schedule</Label>
+                      <Switch
+                        checked={publishScheduleEnabled}
+                        onCheckedChange={setPublishScheduleEnabled}
+                      />
+                    </div>
+                    {publishScheduleEnabled && (
+                      <div className="space-y-8">
+                        <div className="space-y-2">
+                          <Label className="pl-1">Start</Label>
+                          <div className="flex space-x-4 items-end">
+                            <div className="flex-1">
+                              <Label className="pl-1 text-xs text-muted-foreground mb-2 block">
+                                Date
+                              </Label>
+                              <DatePicker
+                                date={startDate}
+                                setDate={setStartDate}
+                                minDate={minDateTime}
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <Label className="pl-1 text-xs text-muted-foreground mb-2 block">
+                                Time
+                              </Label>
+                              <div className="flex space-x-2">
+                                <Select
+                                  value={startHour}
+                                  onValueChange={setStartHour}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="HH" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {hours.map((hour) => (
+                                      <SelectItem
+                                        key={hour}
+                                        value={hour}
+                                        disabled={
+                                          !isStartTimeValid(
+                                            hour,
+                                            startMinute,
+                                            startDate
+                                          )
+                                        }
+                                      >
+                                        {hour}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Select
+                                  value={startMinute}
+                                  onValueChange={setStartMinute}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="MM" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {minutes.map((minute) => (
+                                      <SelectItem
+                                        key={minute}
+                                        value={minute}
+                                        disabled={
+                                          !isStartTimeValid(
+                                            startHour,
+                                            minute,
+                                            startDate
+                                          )
+                                        }
+                                      >
+                                        {minute}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="pl-1">End</Label>
+                          <div className="flex space-x-4 items-end">
+                            <div className="flex-1">
+                              <Label className="pl-1 text-xs text-muted-foreground mb-2 block">
+                                Date
+                              </Label>
+                              <DatePicker
+                                date={endDate}
+                                setDate={setEndDate}
+                                minDate={startDate || minDateTime}
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <Label className="pl-1 text-xs text-muted-foreground mb-2 block">
+                                Time
+                              </Label>
+                              <div className="flex space-x-2">
+                                <Select
+                                  value={endHour}
+                                  onValueChange={setEndHour}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="HH" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {hours.map((hour) => (
+                                      <SelectItem
+                                        key={hour}
+                                        value={hour}
+                                        disabled={
+                                          !isEndTimeValid(
+                                            hour,
+                                            endMinute,
+                                            startDate,
+                                            endDate
+                                          )
+                                        }
+                                      >
+                                        {hour}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Select
+                                  value={endMinute}
+                                  onValueChange={setEndMinute}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="MM" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {minutes.map((minute) => (
+                                      <SelectItem
+                                        key={minute}
+                                        value={minute}
+                                        disabled={
+                                          !isEndTimeValid(
+                                            endHour,
+                                            minute,
+                                            startDate,
+                                            endDate
+                                          )
+                                        }
+                                      >
+                                        {minute}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
-
-                {/* Banner */}
-                <div className="space-y-1">
-                  <Label className="pl-1 flex items-center">Banner</Label>
-                  <Input
-                    id="banner-upload"
-                    placeholder="Choose a banner"
-                    type="file"
-                    accept=".jpg,.jpeg,.png,.gif,.webp"
-                    onChange={handleBannerChange}
-                  />
-                  {bannerImage && (
-                    <div className="mt-2 relative">
-                      <img
-                        src={bannerImage.preview}
-                        alt="Banner Preview"
-                        className="w-full h-32 object-cover rounded-md"
-                      />
-                      <button
-                        onClick={clearBannerImage}
-                        className="absolute top-2 right-2 bg-white/50 rounded-full p-1 hover:bg-white/75"
-                      >
-                        <X className="h-4 w-4 text-black" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label>Publish Schedule</Label>
-                    <Switch
-                      checked={publishScheduleEnabled}
-                      onCheckedChange={setPublishScheduleEnabled}
-                    />
-                  </div>
-                  {publishScheduleEnabled && (
-                    <div className="space-y-8">
-                      <div className="space-y-2">
-                        <Label className="pl-1">Start</Label>
-                        <div className="flex space-x-4 items-end">
-                          <div className="flex-1">
-                            <Label className="pl-1 text-xs text-muted-foreground mb-2 block">
-                              Date
-                            </Label>
-                            <DatePicker
-                              date={startDate}
-                              setDate={setStartDate}
-                              minDate={minDateTime}
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <Label className="pl-1 text-xs text-muted-foreground mb-2 block">
-                              Time
-                            </Label>
-                            <div className="flex space-x-2">
-                              <Select
-                                value={startHour}
-                                onValueChange={setStartHour}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="HH" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {hours.map((hour) => (
-                                    <SelectItem
-                                      key={hour}
-                                      value={hour}
-                                      disabled={
-                                        !isStartTimeValid(
-                                          hour,
-                                          startMinute,
-                                          startDate
-                                        )
-                                      }
-                                    >
-                                      {hour}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <Select
-                                value={startMinute}
-                                onValueChange={setStartMinute}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="MM" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {minutes.map((minute) => (
-                                    <SelectItem
-                                      key={minute}
-                                      value={minute}
-                                      disabled={
-                                        !isStartTimeValid(
-                                          startHour,
-                                          minute,
-                                          startDate
-                                        )
-                                      }
-                                    >
-                                      {minute}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="pl-1">End</Label>
-                        <div className="flex space-x-4 items-end">
-                          <div className="flex-1">
-                            <Label className="pl-1 text-xs text-muted-foreground mb-2 block">
-                              Date
-                            </Label>
-                            <DatePicker
-                              date={endDate}
-                              setDate={setEndDate}
-                              minDate={startDate || minDateTime}
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <Label className="pl-1 text-xs text-muted-foreground mb-2 block">
-                              Time
-                            </Label>
-                            <div className="flex space-x-2">
-                              <Select
-                                value={endHour}
-                                onValueChange={setEndHour}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="HH" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {hours.map((hour) => (
-                                    <SelectItem
-                                      key={hour}
-                                      value={hour}
-                                      disabled={
-                                        !isEndTimeValid(
-                                          hour,
-                                          endMinute,
-                                          startDate,
-                                          endDate
-                                        )
-                                      }
-                                    >
-                                      {hour}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <Select
-                                value={endMinute}
-                                onValueChange={setEndMinute}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="MM" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {minutes.map((minute) => (
-                                    <SelectItem
-                                      key={minute}
-                                      value={minute}
-                                      disabled={
-                                        !isEndTimeValid(
-                                          endHour,
-                                          minute,
-                                          startDate,
-                                          endDate
-                                        )
-                                      }
-                                    >
-                                      {minute}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <SheetFooter>
-                <SheetClose asChild>
-                  <Button type="submit" className="w-full">
-                    Save Changes
-                  </Button>
-                </SheetClose>
-              </SheetFooter>
+                <SheetFooter>
+                  <SheetClose asChild>
+                    <Button type="submit" className="w-full mb-10">
+                      Save Changes
+                    </Button>
+                  </SheetClose>
+                </SheetFooter>
+              </ScrollArea>
             </SheetContent>
           </Sheet>
           <button
@@ -687,7 +692,7 @@ export default function Editor() {
           <Button>Publish</Button>
         </div>
 
-        {isSelectionMode && selectedCount > 0 && (
+        {isSelectionMode && (
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-500">
               {selectedCount} item{selectedCount !== 1 ? "s" : ""} selected
@@ -700,6 +705,14 @@ export default function Editor() {
             >
               <Trash2 className="h-4 w-4" />
               Delete Selected
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setIsSelectionMode(!isSelectionMode)}
+              className="flex items-center gap-2"
+            >
+              <MousePointer2 className="h-4 w-4" />
+              Exit Selection
             </Button>
           </div>
         )}
@@ -831,6 +844,9 @@ export default function Editor() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <div>
+        <Chatbot/>
+      </div>
     </div>
   );
 }
