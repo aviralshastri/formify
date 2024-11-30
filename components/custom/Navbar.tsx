@@ -1,5 +1,5 @@
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
-
+import { useState, useEffect } from "react";
+import { Menu } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import {
@@ -13,8 +13,51 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/public/logo.png";
+import Router from "next/router";
+
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const Navbar = () => {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = Cookies.get("authToken");
+
+    if (!token) {
+      setIsLoggedIn(false);
+      return;
+    }
+
+    const verifyToken = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/verify-token",
+          null,
+          {
+            params: { token },
+          }
+        );
+        if (response.data.status === "valid") {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("Token verification failed:", error);
+        setIsLoggedIn(false);
+
+        if (axios.isAxiosError(error)) {
+          console.error("Error response:", error.response?.data);
+        }
+      }
+    };
+
+    verifyToken();
+  }, []);
+
   return (
     <section className="py-6 px-10">
       <div className="container">
@@ -82,15 +125,29 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex gap-2 items-center justify-center">
-            <Link href={"/login"} className="px-4 py-2 border rounded-lg">
-              Log in
-            </Link>
-            <Link
-              href={"/signup"}
-              className="px-4 py-2 border rounded-lg text-white bg-black"
-            >
-              Sign up
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                className={cn(buttonVariants({ variant: "default" }))}
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className={cn(buttonVariants({ variant: "outline" }))}
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className={cn(buttonVariants({ variant: "default" }))}
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
           </div>
         </nav>
         <div className="block lg:hidden">
@@ -107,7 +164,7 @@ const Navbar = () => {
             </div>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant={"outline"} size={"icon"}>
+                <Button variant="outline" size="icon">
                   <Menu className="size-4" />
                 </Button>
               </SheetTrigger>
@@ -142,18 +199,35 @@ const Navbar = () => {
                 </div>
                 <div className="border-t pt-4">
                   <div className="mt-2 flex flex-col gap-3">
-                    <Link
-                      href={"/login"}
-                      className="px-4 py-2 border rounded-lg"
-                    >
-                      Log in
-                    </Link>
-                    <Link
-                      href={"/signup"}
-                      className="px-4 py-2 border rounded-lg text-white bg-black"
-                    >
-                      Sign up
-                    </Link>
+                    {isLoggedIn ? (
+                      <Link
+                        href="/dashboard"
+                        className={cn(
+                          buttonVariants({ variant: "default", size: "lg" })
+                        )}
+                      >
+                        Dashboard
+                      </Link>
+                    ) : (
+                      <>
+                        <Link
+                          href="/login"
+                          className={cn(
+                            buttonVariants({ variant: "outline", size: "lg" })
+                          )}
+                        >
+                          Log in
+                        </Link>
+                        <Link
+                          href="/signup"
+                          className={cn(
+                            buttonVariants({ variant: "default", size: "lg" })
+                          )}
+                        >
+                          Sign up
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>

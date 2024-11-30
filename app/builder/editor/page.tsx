@@ -52,6 +52,7 @@ import {
   X,
   MessageCircleCode,
   HomeIcon,
+  LayoutDashboard,
 } from "lucide-react";
 import {
   Sheet,
@@ -79,6 +80,12 @@ import Chatbot from "@/components/custom/Chatbot";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/public/logo-light.png";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const FORM_COMPONENTS = [
   {
@@ -409,9 +416,37 @@ export default function Editor() {
     <div className="h-screen flex flex-col w-full bg-gray-50">
       <div className="p-4 bg-white shadow-sm border-b border-gray-200 flex justify-between items-center">
         <div className="flex flex-row space-x-3 items-center">
-          <Link href={"/"} className="flex items-center rounded-lg border-2 p-1">
-            <HomeIcon size={25}/>
-          </Link>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                {" "}
+                <Link
+                  href={"/"}
+                  className="flex items-center rounded-lg border-2 p-1"
+                >
+                  <HomeIcon size={25} />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Home</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Link
+                  href={"/dashboard"}
+                  className="flex items-center rounded-lg border-2 p-1"
+                >
+                  <LayoutDashboard size={25} />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Dashboard</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <Button
             variant="outline"
             className="flex items-center gap-2 hover:bg-blue-50 hover:border-blue-300 transition-colors"

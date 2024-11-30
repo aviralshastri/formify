@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/card";
 import { EyeIcon, EyeOffIcon, Mail, Lock } from "lucide-react";
 import Layout from "@/components/custom/Layout";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -31,12 +33,49 @@ export default function Login() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    const token = Cookies.get("authToken");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    const verifyToken = async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/verify-token",
+          null,
+          {
+            params: { token },
+          }
+        );
+        if (response.data.status === "valid") {
+          router.push("/dashboard");
+        } else {
+          Cookies.remove("authToken");
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Token verification failed:", error);
+        Cookies.remove("authToken");
+        router.push("/login");
+
+        if (axios.isAxiosError(error)) {
+          console.error("Error response:", error.response?.data);
+        }
+      }
+    };
+
+    verifyToken();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch("http://localhost:8000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -44,11 +83,17 @@ export default function Login() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Login failed");
+        throw new Error(errorData.detail || "Login failed");
       }
 
       const data = await response.json();
       console.log("Login successful, token:", data.token);
+      Cookies.set("authToken", data.token, {
+        secure: process.env.NODE_ENV === "production",
+
+        sameSite: "Strict",
+      });
+
       router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");

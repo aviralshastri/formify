@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Type, 
-  CheckSquare, 
-  Calendar, 
-  List,
-  Layers,
-  Grid 
-} from 'lucide-react';
+import React from 'react';
+import { useTheme } from 'next-themes';
+import Lottie from 'lottie-react';
+
+import LoaderLight from '@/public/loader-light.json';
+import LoaderDark from '@/public/loader-dark.json';
 
 interface LoadingScreenProps {
   heading?: string;
@@ -17,67 +14,27 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
   heading = "Building Your Form",
   description = "Preparing form elements..."
 }) => {
-  // Form builder element types
-  const formElements = [
-    { 
-      icon: <Type className="text-blue-500" size={48} />,
-      name: "Text Input"
-    },
-    { 
-      icon: <CheckSquare className="text-green-500" size={48} />,
-      name: "Checkbox"
-    },
-    { 
-      icon: <Calendar className="text-purple-500" size={48} />,
-      name: "Date Picker"
-    },
-    { 
-      icon: <List className="text-orange-500" size={48} />,
-      name: "Dropdown"
-    },
-    { 
-      icon: <Layers className="text-red-500" size={48} />,
-      name: "Sections"
-    },
-    { 
-      icon: <Grid className="text-teal-500" size={48} />,
-      name: "Grid"
-    }
-  ];
+  const { resolvedTheme } = useTheme();
 
-  const [currentIconIndex, setCurrentIconIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIconIndex((prev) => (prev + 1) % formElements.length);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // Choose animation based on current theme
+  const animationData = resolvedTheme === 'dark' ? LoaderDark : LoaderLight;
 
   return (
-    <div className="fixed inset-0 bg-gray-50 flex flex-col items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center overflow-hidden">
       <div className="relative w-32 h-32 flex items-center justify-center">
-        {formElements.map((element, index) => (
-          <div 
-            key={index}
-            className={`
-              absolute transition-all duration-700 ease-in-out
-              ${currentIconIndex === index 
-                ? 'opacity-100 scale-100 rotate-0' 
-                : 'opacity-0 scale-50 rotate-180'}
-            `}
-          >
-            {element.icon}
-          </div>
-        ))}
+        <Lottie 
+          animationData={animationData}
+          loop={true}
+          autoplay={true}
+          className="w-full h-full"
+        />
       </div>
 
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+      <div className="text-center mt-4">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
           {heading}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           {description}
         </p>
       </div>
