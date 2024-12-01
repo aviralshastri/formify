@@ -15,8 +15,6 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
   description = "Preparing form elements..."
 }) => {
   const { resolvedTheme } = useTheme();
-
-  // Choose animation based on current theme
   const animationData = resolvedTheme === 'dark' ? LoaderDark : LoaderLight;
 
   return (
