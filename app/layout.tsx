@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { geistSans, geistMono } from "@/lib/fonts";
 import { DataProvider } from "@/context/DataContext";
-import { ThemeProvider } from "next-themes";
-import { useTheme } from "next-themes";
 import ThemeWrapper from "@/components/custom/ThemeWrapper";
 export const metadata: Metadata = {
   title: "Formify",
@@ -21,14 +19,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <DataProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem={true}
-            disableTransitionOnChange
-          >
+          
             <ThemeWrapper>{children}</ThemeWrapper>
-          </ThemeProvider>
+
         </DataProvider>
       </body>
     </html>
