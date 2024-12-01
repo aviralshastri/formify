@@ -123,7 +123,7 @@ function Signup() {
     console.log("Form submitted:", data);
 
     try {
-      const response = await fetch("http://localhost:8000/signup", {
+      const response = await fetch("http://192.168.1.16:8000/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -137,7 +137,7 @@ function Signup() {
       } else {
         const error = await response.json();
         console.error("Error:", error);
-        alert("Error: " + error.detail); // Alert the user of error
+        alert("Error: " + error.detail);
       }
     } catch (error) {
       console.error("Network error:", error);
