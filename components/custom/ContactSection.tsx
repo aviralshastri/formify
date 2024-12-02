@@ -56,7 +56,7 @@ const ContactSection = () => {
   };
 
   return (
-    <section className="py-24 px-4 bg-background/95">
+    <section className="py-24 px-4 bg-background/95" id="contact">
       <Toaster
         position="top-center"
         toastOptions={{
@@ -81,7 +81,7 @@ const ContactSection = () => {
                     className="rounded-xl"
                     alt="logo"
                   />
-                  <h2 className="text-3xl font-bold">FORMIFY</h2>
+                  <h2 className="text-3xl font-bold">Asterforms</h2>
                   <p className="text-muted-foreground">
                     Get in touch with us for any questions or inquiries.
                   </p>

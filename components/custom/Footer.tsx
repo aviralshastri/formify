@@ -34,9 +34,9 @@ const footerSections = [
   {
     title: 'Connect',
     links: [
-      { name: 'Twitter', href: 'https://twitter.com/formify', external: true },
-      { name: 'LinkedIn', href: 'https://linkedin.com/company/formify', external: true },
-      { name: 'GitHub', href: 'https://github.com/formify', external: true },
+      { name: 'Twitter', href: 'https://twitter.com/asterforms', external: true },
+      { name: 'LinkedIn', href: 'https://linkedin.com/company/asterforms', external: true },
+      { name: 'GitHub', href: 'https://github.com/asterforms', external: true },
     ],
   },
 ];
@@ -53,10 +53,10 @@ const Footer = () => {
                 src={logo}
                 width={50}
                 height={50}
-                alt="Formify Logo"
+                alt="Asterforms Logo"
                 className="rounded-lg"
               />
-              <h2 className="text-xl font-bold text-gray-900">Formify</h2>
+              <h2 className="text-xl font-bold text-gray-900">Asterforms</h2>
             </div>
             <p className="text-sm text-gray-600">
               Simplifying form creation and management for businesses of all sizes.
@@ -96,7 +96,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-sm text-gray-600">
-            © {new Date().getFullYear()} Formify. All rights reserved.
+            © {new Date().getFullYear()} Asterforms. All rights reserved.
           </p>
           <div className="flex space-x-4">
             <Link 

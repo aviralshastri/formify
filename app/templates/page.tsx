@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Download, Filter, X } from "lucide-react";
+import { Filter, X, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import logo from "@/public/logo.png"
+import Image from "next/image";
+import logo from "@/public/logo.png";
 import {
   Dialog,
   DialogContent,
@@ -16,21 +17,21 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import Image from "next/image";
+import Layout from "@/components/custom/Layout";
+import LoadingScreen from "@/components/custom/LoadingScreen"; // Import LoadingScreen
 
 interface Template {
   id: string;
   title: string;
   categories: string[];
-  rating: number;
-  downloads: string;
+  publisher: string;
   thumbnail: string;
   image: string;
   description?: string;
   fullDescription?: string;
 }
 
-const allCategories = [
+const ALL_CATEGORIES = [
   "All",
   "Business",
   "Education",
@@ -41,7 +42,7 @@ const allCategories = [
   "Quiz",
 ];
 
-const categoryVariants = {
+const CATEGORY_VARIANTS = {
   Business: "default",
   Education: "secondary",
   Personal: "outline",
@@ -51,133 +52,203 @@ const categoryVariants = {
   Quiz: "warning",
 };
 
-const templates: Template[] = [
-  {
-    id: "1",
-    title: "Customer Feedback",
-    categories: ["Business", "Feedback"],
-    rating: 4.5,
-    downloads: "1.2K",
-    thumbnail: "https://via.assets.so/img.jpg?w=400&h=400&tc=white&bg=black",
-    image: "https://via.assets.so/img.jpg?w=600&h=400&tc=white&bg=black",
-    description: "Comprehensive customer satisfaction survey",
-    fullDescription:
-      "A detailed survey designed to gather comprehensive insights into customer experience, satisfaction levels, and potential areas of improvement for your business.",
-  },
-];
-
-export default function Templates() {
+export default function TemplatesPage() {
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(true); // Track loading state
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await fetch(
+          "http://192.168.1.8:8000/get-templates?query=s"
+        );
+        const data = await response.json();
+
+        const formattedTemplates = data.templates.map((template: any) => ({
+          id: template.id,
+          title: template.title,
+          categories: template.categories,
+          publisher: template.publisher_name,
+          thumbnail:
+            "https://via.assets.so/img.jpg?w=400&h=400&tc=white&bg=black",
+          image: "https://via.assets.so/img.jpg?w=600&h=400&tc=white&bg=black",
+          description: template.description,
+          fullDescription: `Full description for ${template.title}`,
+        }));
+
+        setTemplates(formattedTemplates);
+      } catch (error) {
+        console.error("Error fetching templates:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, []);
 
   const filteredTemplates = useMemo(() => {
-    return templates.filter(
-      (template) =>
-        (selectedCategories.length === 0 ||
-          selectedCategories.some((category) =>
-            template.categories.includes(category)
-          )) &&
-        (template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          template.description
-            ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()))
-    );
-  }, [selectedCategories, searchQuery]);
+    return templates.filter((template) => {
+      const matchesCategories =
+        selectedCategories.length === 0 ||
+        selectedCategories.some((category) =>
+          template.categories.includes(category)
+        );
 
-  const toggleCategory = (category: string) => {
-    setSelectedCategories((prevCategories) =>
-      prevCategories.includes(category)
-        ? prevCategories.filter((c) => c !== category)
-        : [...prevCategories, category]
-    );
-  };
+      const matchesSearch =
+        template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        template.description
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        template.publisher.toLowerCase().includes(searchQuery.toLowerCase());
 
-  const clearCategories = () => {
+      return matchesCategories && matchesSearch;
+    });
+  }, [selectedCategories, searchQuery, templates]);
+
+  const toggleCategory = useCallback((category: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  }, []);
+
+  const clearCategories = useCallback(() => {
     setSelectedCategories([]);
-  };
+  }, []);
+
+  const openTemplateDetails = useCallback((template: Template) => {
+    setSelectedTemplate(template);
+  }, []);
+
+  const closeTemplateDetails = useCallback(() => {
+    setSelectedTemplate(null);
+  }, []);
+
+  const useSelectedTemplate = useCallback(() => {
+    if (selectedTemplate) {
+      console.log("Using template:", selectedTemplate.title);
+      closeTemplateDetails();
+    }
+  }, [selectedTemplate, closeTemplateDetails]);
 
   return (
-    <>
-      <div className="flex justify-center min-h-screen bg-white p-4">
-        <div className="w-full max-w-3xl">
-          <Image className="rounded-2xl" src={logo} width={100} height={100} alt="goo" />
-          <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">
-            Formify Templates
-          </h1>
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="flex-grow">
+    <Layout>
+      <div className="min-h-screen bg-gray-50 py-12 px-4">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-12">
+            <Image
+              src={logo}
+              width={100}
+              height={100}
+              alt="Asterforms Logo"
+              className="mx-auto mb-4 rounded-xl"
+            />
+            <h1 className="text-4xl font-bold text-gray-800">
+              Asterforms Templates
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Find the perfect template for your next form
+            </p>
+          </div>
+
+          <div className="mb-8 flex items-center space-x-4">
+            <div className="flex-grow relative">
               <Input
                 type="text"
-                placeholder="Search templates..."
+                placeholder="Search templates by name, category, publisher, or tag..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full"
-                icon={<Filter className="h-4 w-4 text-muted-foreground" />}
+                className="pl-10 w-full"
+              />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                size={20}
               />
             </div>
           </div>
 
-          <div className="w-full rounded-md border bg-white mb-6">
-            <div className="flex flex-wrap justify-start gap-4 p-4">
-              {allCategories.filter(category => category !== "All").map((category) => (
-                <Button
-                  key={category}
-                  variant={
-                    selectedCategories.includes(category) ? "default" : "outline"
-                  }
-                  onClick={() => toggleCategory(category)}
-                  className="flex-shrink-0 w-auto"
-                >
-                  {category}
-                </Button>
-              ))}
-              {selectedCategories.length > 0 && (
-                <Button
-                  variant="outline"
-                  onClick={clearCategories}
-                  className="text-muted-foreground hover:text-destructive"
-                >
-                  <X className="h-4 w-4 mr-2" /> Clear
-                </Button>
+          <div className="mb-1 overflow-x-auto">
+            <div className="flex space-x-2 pb-4 md:pb-0">
+              {ALL_CATEGORIES.filter((category) => category !== "All").map(
+                (category) => (
+                  <Button
+                    key={category}
+                    variant={
+                      selectedCategories.includes(category)
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() => toggleCategory(category)}
+                    size="sm"
+                  >
+                    {category}
+                  </Button>
+                )
               )}
             </div>
           </div>
 
-          {filteredTemplates.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
+          {selectedCategories.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearCategories}
+              className="text-destructive hover:bg-destructive/10 mt-2"
+            >
+              <X className="mr-2 h-4 w-4" /> Clear
+            </Button>
+          )}
+
+          <div className="mb-6" />
+
+          {isLoading ? (
+            <LoadingScreen />
+          ) : filteredTemplates.length === 0 ? (
+            <div className="text-center text-muted-foreground py-12">
               No templates found. Try a different search or category.
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredTemplates.map((template) => (
                 <Card
                   key={template.id}
-                  className="overflow-hidden bg-white hover:shadow-lg transition-shadow duration-300"
+                  className="hover:shadow-lg transition-all duration-300 border-gray-200"
                 >
                   <CardContent className="p-0">
                     <img
                       src={template.thumbnail}
                       alt={template.title}
-                      className="w-full p-4 h-48 object-cover"
+                      className="w-full h-48 object-cover rounded-t-lg"
                     />
                     <div className="p-4">
-                      <h3 className="font-semibold text-sm mb-1 truncate">
-                        {template.title}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
+                      <div className="mb-2">
+                        <h3 className="font-semibold text-lg truncate pr-4 mb-1">
+                          {template.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          by {template.publisher}
+                        </p>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                         {template.description}
                       </p>
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-2 mb-4">
                         {template.categories.map((category) => (
                           <Badge
                             key={category}
                             variant={
-                              categoryVariants[
-                                category as keyof typeof categoryVariants
+                              CATEGORY_VARIANTS[
+                                category as keyof typeof CATEGORY_VARIANTS
                               ]
                             }
-                            className="text-[10px]"
+                            className="text-xs"
                           >
                             {category}
                           </Badge>
@@ -185,11 +256,10 @@ export default function Templates() {
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="p-4 pt-0">
+                  <CardFooter>
                     <Button
                       className="w-full"
-                      size="lg"
-                      onClick={() => setSelectedTemplate(template)}
+                      onClick={() => openTemplateDetails(template)}
                     >
                       Learn More
                     </Button>
@@ -198,59 +268,65 @@ export default function Templates() {
               ))}
             </div>
           )}
+
+          {selectedTemplate && (
+            <Dialog
+              open={!!selectedTemplate}
+              onOpenChange={closeTemplateDetails}
+            >
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    {selectedTemplate.title}
+                    <p className="text-sm text-muted-foreground mt-1">
+                      by {selectedTemplate.publisher}
+                    </p>
+                  </DialogTitle>
+                  <div className="flex flex-wrap gap-2 my-2">
+                    {selectedTemplate.categories.map((category) => (
+                      <Badge
+                        key={category}
+                        variant={
+                          CATEGORY_VARIANTS[
+                            category as keyof typeof CATEGORY_VARIANTS
+                          ]
+                        }
+                        className="text-xs"
+                      >
+                        {category}
+                      </Badge>
+                    ))}
+                  </div>
+                  <DialogDescription>
+                    {selectedTemplate.fullDescription}
+                  </DialogDescription>
+                </DialogHeader>
+
+                {/* Image */}
+                <div className="mb-4">
+                  <Image
+                    src={selectedTemplate.image}
+                    alt={selectedTemplate.title}
+                    width={600} // Adjust width as needed
+                    height={400} // Adjust height as needed
+                    className="object-cover rounded-lg"
+                  />
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    variant="default"
+                    onClick={useSelectedTemplate}
+                    className="w-full"
+                  >
+                    Use Template
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
-
-      {selectedTemplate && (
-        <Dialog
-          open={!!selectedTemplate}
-          onOpenChange={() => setSelectedTemplate(null)}
-        >
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle>
-                {selectedTemplate.title}
-                <div className="flex flex-wrap gap-2 mb-4 mt-2">
-                  {selectedTemplate.categories.map((category) => (
-                    <Badge
-                      key={category}
-                      variant={
-                        categoryVariants[
-                          category as keyof typeof categoryVariants
-                        ]
-                      }
-                    >
-                      {category}
-                    </Badge>
-                  ))}
-                </div>
-              </DialogTitle>
-              <DialogDescription>
-                {selectedTemplate.fullDescription}
-              </DialogDescription>
-            </DialogHeader>
-
-            <img
-              src={selectedTemplate.image}
-              alt={selectedTemplate.title}
-              className="object-fit rounded-md mb-4"
-            />
-
-            <DialogFooter>
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={() => {
-                  console.log("Using template:", selectedTemplate.title);
-                  setSelectedTemplate(null);
-                }}
-              >
-                Use Template
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+    </Layout>
   );
 }

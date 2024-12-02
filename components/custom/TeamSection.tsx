@@ -13,13 +13,36 @@ import {
   Github 
 } from "lucide-react";
 
-const teamMembers = [
+// Type definition for team member
+interface TeamMember {
+  name: string;
+  role: string;
+  bio: string;
+  avatar: string;
+  background?: string;
+  socials: {
+    linkedin?: string;
+    twitter?: string;
+    github?: string;
+  };
+  expertise: string[];
+}
+
+// Social icon mapping with better type safety
+const socialIcons = {
+  linkedin: Linkedin,
+  twitter: Twitter,
+  github: Github
+} as const;
+
+// Centralized team data with more flexible structure
+const teamMembers: TeamMember[] = [
   {
     name: "Aviral Shastri",
     role: "Founder & CEO",
     bio: "AI and software engineering expert passionate about revolutionizing form creation through intelligent design solutions.",
-    avatar: "/me.jpg", // Assuming you have an avatar image
-    background: "/team-bg.png", // Optional background image
+    avatar: "/me.jpg",
+    background: "/team-bg.png",
     socials: {
       linkedin: "https://linkedin.com/in/aviralshastri",
       twitter: "https://twitter.com/aviralshastri",
@@ -33,11 +56,22 @@ const teamMembers = [
   }
 ];
 
-const TeamSection = () => {
+const TeamSection: React.FC = () => {
+  // Safely get the first team member or provide a fallback
+  const founder = teamMembers[0] || {
+    name: "Founder",
+    role: "Leadership",
+    bio: "No information available",
+    avatar: "/placeholder.jpg",
+    socials: {},
+    expertise: []
+  };
+
   return (
     <section className="py-20 bg-white" id="team">
       <div className="container">
         <div className="flex w-full flex-col items-center">
+          {/* Header Section */}
           <div className="flex flex-col items-center space-y-4 text-center sm:space-y-6 md:max-w-3xl md:text-center mb-16">
             <p className="text-sm text-muted-foreground uppercase tracking-wider">
               MEET THE FOUNDER
@@ -51,17 +85,20 @@ const TeamSection = () => {
             </p>
           </div>
 
+          {/* Team Member Card */}
           <div className="w-full max-w-4xl">
-            <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <Card className="overflow-hidden shadow-lg">
               <div className="relative">
                 {/* Background Image */}
-                <div 
-                  className="absolute inset-0 bg-cover bg-center opacity-10"
-                  style={{ 
-                    backgroundImage: `url('/team-bg.png')`,
-                    filter: 'grayscale(100%)'
-                  }}
-                />
+                {founder.background && (
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center opacity-10"
+                    style={{ 
+                      backgroundImage: `url('${founder.background}')`,
+                      filter: 'grayscale(100%)'
+                    }}
+                  />
+                )}
 
                 {/* Card Content */}
                 <div className="relative z-10 grid md:grid-cols-3">
@@ -69,8 +106,8 @@ const TeamSection = () => {
                   <div className="md:col-span-1 flex items-center justify-center p-6">
                     <div className="relative">
                       <img 
-                        src="/me.jpg" 
-                        alt={teamMembers[0].name} 
+                        src={founder.avatar} 
+                        alt={founder.name} 
                         className="w-64 h-64 object-cover rounded-full border-4 border-primary shadow-lg"
                       />
                       <Badge 
@@ -86,51 +123,50 @@ const TeamSection = () => {
                   <div className="md:col-span-2 p-8 flex flex-col justify-center">
                     <CardHeader className="p-0 mb-4">
                       <CardTitle className="text-3xl mb-2">
-                        {teamMembers[0].name}
+                        {founder.name}
                       </CardTitle>
                       <CardDescription className="text-lg">
-                        {teamMembers[0].role}
+                        {founder.role}
                       </CardDescription>
                     </CardHeader>
 
                     <CardContent className="p-0">
                       <p className="text-muted-foreground mb-6">
-                        {teamMembers[0].bio}
+                        {founder.bio}
                       </p>
 
                       {/* Expertise Badges */}
-                      <div className="flex flex-wrap gap-2 mb-6">
-                        {teamMembers[0].expertise.map((skill, index) => (
-                          <Badge 
-                            key={index} 
-                            variant="secondary" 
-                            className="px-3 py-1"
-                          >
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
+                      {founder.expertise.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-6">
+                          {founder.expertise.map((skill, index) => (
+                            <Badge 
+                              key={index} 
+                              variant="secondary" 
+                              className="px-3 py-1"
+                            >
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Social Links */}
                       <div className="flex space-x-4">
-                        {Object.entries(teamMembers[0].socials).map(([platform, url]) => {
-                          const socialIcons = {
-                            linkedin: <Linkedin className="w-6 h-6" />,
-                            twitter: <Twitter className="w-6 h-6" />,
-                            github: <Github className="w-6 h-6" />
-                          };
-
-                          return (
+                        {Object.entries(founder.socials).map(([platform, url]) => {
+                          const SocialIcon = socialIcons[platform as keyof typeof socialIcons];
+                          
+                          return SocialIcon ? (
                             <a
                               key={platform}
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-muted-foreground hover:text-primary transition-colors"
+                              aria-label={`${platform} profile`}
                             >
-                              {socialIcons[platform]}
+                              <SocialIcon className="w-6 h-6" />
                             </a>
-                          );
+                          ) : null;
                         })}
                       </div>
                     </CardContent>
