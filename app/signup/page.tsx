@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
@@ -31,17 +31,27 @@ export default function Signup() {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const router = useRouter();
 
-  // Refs for animations
   const formRef = useRef(null);
   const headerRef = useRef(null);
   const formInView = useInView(formRef, { once: true, amount: 0.2 });
   const headerInView = useInView(headerRef, { once: true, amount: 0.5 });
 
-  // Check authToken on component mount
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
       verifyToken();
+    }
+
+    const userDetails = sessionStorage.getItem("userDetails");
+    if (userDetails) {
+      const sessionData = JSON.parse(userDetails); 
+      setFormData({
+        fullName: sessionData.name,
+        email: sessionData.email.value,
+        phoneNumber: sessionData.phoneNumber.value,
+        password: "",
+        confirmPassword: "",
+      });
     }
   }, []);
 
@@ -49,7 +59,7 @@ export default function Signup() {
     try {
       const response = await fetch("/verify-token", {
         method: "GET",
-        credentials: "include", // Adjust based on your server setup
+        credentials: "include",
       });
       if (response.ok) {
         router.push("/dashboard");
@@ -63,7 +73,6 @@ export default function Signup() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Password strength calculation
     if (name === "password") {
       let strength = 0;
       if (value.length >= 8) strength += 1;
@@ -100,10 +109,20 @@ export default function Signup() {
       setError("Passwords do not match");
       return;
     }
+    if (formData.password.length<8){
+      setError("Password should contain atleast 8 characters")
+      return;
+    }
 
     try {
-      console.log("Signup form submitted", formData);
-      router.push("/dashboard");
+      const userDetails = {
+        name: formData.fullName,
+        email: { value: formData.email, status: "unverified" },
+        phoneNumber: { value: formData.phoneNumber, status: "unverified" },
+        password: formData.password,
+      };
+      sessionStorage.setItem("userDetails", JSON.stringify(userDetails));
+      router.push("/signup/verify-email");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     }
@@ -273,7 +292,7 @@ export default function Signup() {
                     />
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    Password strength: 
+                    Password strength:
                     {passwordStrength <= 1 && " Weak"}
                     {passwordStrength > 1 && passwordStrength <= 3 && " Medium"}
                     {passwordStrength > 3 && " Strong"}
@@ -287,7 +306,10 @@ export default function Signup() {
                   animate={formInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.6, delay: 1.0 }}
                 >
-                  <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                  <Label
+                    htmlFor="confirmPassword"
+                    className="text-sm font-medium"
+                  >
                     Confirm Password
                   </Label>
                   <div className="relative">
@@ -304,7 +326,9 @@ export default function Signup() {
                     />
                     <motion.button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
