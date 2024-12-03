@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Menu } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import {
   Sheet,
@@ -13,10 +14,8 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/public/logo.png";
-import Router from "next/router";
-
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import axios from "axios";
 
 const Navbar = () => {
@@ -58,12 +57,95 @@ const Navbar = () => {
     verifyToken();
   }, []);
 
+  // Animation variants
+  const logoVariants = {
+    initial: { scale: 0.9, opacity: 0 },
+    animate: { 
+      scale: 1, 
+      opacity: 1, 
+      transition: { 
+        duration: 0.3,
+        type: "spring",
+        stiffness: 120 
+      }
+    },
+    hover: { 
+      scale: 1.05,
+      transition: { duration: 0.2 }
+    }
+  };
+
+  const navItemVariants = {
+    initial: { opacity: 0, y: -10 },
+    animate: (custom) => ({
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        delay: custom * 0.1,
+        duration: 0.3
+      }
+    }),
+    hover: { 
+      scale: 1.05,
+      color: "hsl(220, 87%, 54%)", // Subtle blue highlight
+      transition: { duration: 0.2 }
+    }
+  };
+
+  const buttonVariants = {
+    initial: { opacity: 0, x: 20 },
+    animate: { 
+      opacity: 1, 
+      x: 0,
+      transition: { 
+        type: "spring", 
+        stiffness: 120 
+      }
+    },
+    hover: { 
+      scale: 1.05,
+      transition: { duration: 0.2 }
+    }
+  };
+
+  const mobileMenuVariants = {
+    initial: { opacity: 0 },
+    animate: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1,
+        delayChildren: 0.2 
+      }
+    }
+  };
+
+  const mobileItemVariants = {
+    initial: { opacity: 0, x: -20 },
+    animate: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.3 }
+    }
+  };
+
   return (
-    <section className="py-6 px-10">
+    <motion.section 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="py-6 px-10"
+    >
       <div className="container">
+        {/* Desktop Navigation */}
         <nav className="hidden justify-between lg:flex">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
+            <motion.div 
+              variants={logoVariants}
+              initial="initial"
+              animate="animate"
+              whileHover="hover"
+              className="flex items-center gap-2"
+            >
               <Image
                 src={logo}
                 height={40}
@@ -72,111 +154,93 @@ const Navbar = () => {
                 alt="logo"
               />
               <span className="text-3xl font-bold">Asterforms</span>
-            </div>
+            </motion.div>
             <div className="flex items-center">
-              <a
-                className={cn(
-                  "text-muted-foreground",
-                  navigationMenuTriggerStyle,
-                  buttonVariants({
-                    variant: "ghost",
-                  })
-                )}
-                href="/#"
-              >
-                Home
-              </a>
-              <a
-                className={cn(
-                  "text-muted-foreground",
-                  navigationMenuTriggerStyle,
-                  buttonVariants({
-                    variant: "ghost",
-                  })
-                )}
-                href="/builder/editor"
-              >
-                Builder
-              </a>
-              <a
-                className={cn(
-                  "text-muted-foreground",
-                  navigationMenuTriggerStyle,
-                  buttonVariants({
-                    variant: "ghost",
-                  })
-                )}
-                href="/#features"
-              >
-                Features
-              </a>
-              <a
-                className={cn(
-                  "text-muted-foreground",
-                  navigationMenuTriggerStyle,
-                  buttonVariants({
-                    variant: "ghost",
-                  })
-                )}
-                href="/#pricing"
-              >
-                Pricing
-              </a>
-              <a
-                className={cn(
-                  "text-muted-foreground",
-                  navigationMenuTriggerStyle,
-                  buttonVariants({
-                    variant: "ghost",
-                  })
-                )}
-                href="/templates"
-              >
-                Templates
-              </a>
-              <a
-                className={cn(
-                  "text-muted-foreground",
-                  navigationMenuTriggerStyle,
-                  buttonVariants({
-                    variant: "ghost",
-                  })
-                )}
-                href="/#contact"
-              >
-                Contact
-              </a>
+              {['Home', 'Builder', 'Features', 'Pricing', 'Templates', 'Contact'].map((item, index) => {
+                const href = item === 'Home' ? '/#' : 
+                            item === 'Builder' ? '/builder/editor' : 
+                            item === 'Features' ? '/#features' : 
+                            item === 'Pricing' ? '/#pricing' : 
+                            item === 'Templates' ? '/templates' : 
+                            '/#contact';
+                
+                return (
+                  <motion.a
+                    key={item}
+                    href={href}
+                    custom={index}
+                    variants={navItemVariants}
+                    initial="initial"
+                    animate="animate"
+                    whileHover="hover"
+                    className={cn(
+                      "text-muted-foreground",
+                      navigationMenuTriggerStyle(),
+                      "hover:bg-accent hover:text-accent-foreground"
+                    )}
+                  >
+                    {item}
+                  </motion.a>
+                );
+              })}
             </div>
           </div>
-          <div className="flex gap-2 items-center justify-center">
+          <motion.div 
+            initial="initial"
+            animate="animate"
+            className="flex gap-2 items-center justify-center"
+          >
             {isLoggedIn ? (
-              <Link
-                href="/dashboard"
-                className={cn(buttonVariants({ variant: "default" }))}
+              <motion.div
+                variants={buttonVariants}
+                whileHover="hover"
               >
-                Dashboard
-              </Link>
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                >
+                  Dashboard
+                </Link>
+              </motion.div>
             ) : (
               <>
-                <Link
-                  href="/login"
-                  className={cn(buttonVariants({ variant: "outline" }))}
+                <motion.div
+                  variants={buttonVariants}
+                  whileHover="hover"
                 >
-                  Log in
-                </Link>
-                <Link
-                  href="/signup"
-                  className={cn(buttonVariants({ variant: "default" }))}
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-input bg-background text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
+                  >
+                    Log in
+                  </Link>
+                </motion.div>
+                <motion.div
+                  variants={buttonVariants}
+                  whileHover="hover"
                 >
-                  Sign up
-                </Link>
+                  <Link
+                    href="/signup"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                  >
+                    Sign up
+                  </Link>
+                </motion.div>
               </>
             )}
-          </div>
+          </motion.div>
         </nav>
+
+        {/* Mobile Navigation */}
         <div className="block lg:hidden">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <motion.div 
+              variants={logoVariants}
+              initial="initial"
+              animate="animate"
+              whileHover="hover"
+              className="flex items-center gap-2"
+            >
               <Image
                 src={logo}
                 height={40}
@@ -185,17 +249,27 @@ const Navbar = () => {
                 alt="logo"
               />
               <span className="text-2xl font-bold">Asterforms</span>
-            </div>
+            </motion.div>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="size-4" />
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <Button variant="outline" size="icon">
+                    <Menu className="size-4" />
+                  </Button>
+                </motion.div>
               </SheetTrigger>
               <SheetContent className="overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle>
-                    <div className="flex items-center gap-2">
+                    <motion.div 
+                      variants={logoVariants}
+                      initial="initial"
+                      animate="animate"
+                      className="flex items-center gap-2"
+                    >
                       <Image
                         src={logo}
                         height={40}
@@ -204,43 +278,46 @@ const Navbar = () => {
                         alt="logo"
                       />
                       <span className="text-2xl font-bold">Asterforms</span>
-                    </div>
+                    </motion.div>
                   </SheetTitle>
                 </SheetHeader>
-                <div className="my-8 flex flex-col gap-4">
-                  <a href="/#" className="font-semibold">
-                    Home
-                  </a>
-                  <a href="/builder/editor" className="font-semibold">
-                    Builder
-                  </a>
-                  <a href="/#features" className="font-semibold">
-                    Features
-                  </a>
-                  <a href="/#pricing" className="font-semibold">
-                    Pricing
-                  </a>
-                  <a
-                    className="font-semibold"
-                    href="/templates"
-                  >
-                    Templates
-                  </a>
-                  <a
-                    className="font-semibold"
-                    href="/#contact"
-                  >
-                    Contact
-                  </a>
-                </div>
+                <motion.div 
+                  variants={mobileMenuVariants}
+                  initial="initial"
+                  animate="animate"
+                  className="my-8 flex flex-col gap-4"
+                >
+                  {['Home', 'Builder', 'Features', 'Pricing', 'Templates', 'Contact'].map((item) => {
+                    const href = item === 'Home' ? '/#' : 
+                                item === 'Builder' ? '/builder/editor' : 
+                                item === 'Features' ? '/#features' : 
+                                item === 'Pricing' ? '/#pricing' : 
+                                item === 'Templates' ? '/templates' : 
+                                '/#contact';
+                    
+                    return (
+                      <motion.a
+                        key={item}
+                        href={href}
+                        variants={mobileItemVariants}
+                        className="font-semibold"
+                      >
+                        {item}
+                      </motion.a>
+                    );
+                  })}
+                </motion.div>
                 <div className="border-t pt-4">
-                  <div className="mt-2 flex flex-col gap-3">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="mt-2 flex flex-col gap-3"
+                  >
                     {isLoggedIn ? (
                       <Link
                         href="/dashboard"
-                        className={cn(
-                          buttonVariants({ variant: "default", size: "lg" })
-                        )}
+                        className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
                       >
                         Dashboard
                       </Link>
@@ -248,30 +325,26 @@ const Navbar = () => {
                       <>
                         <Link
                           href="/login"
-                          className={cn(
-                            buttonVariants({ variant: "outline", size: "lg" })
-                          )}
+                          className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-input bg-background text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
                         >
                           Log in
                         </Link>
                         <Link
                           href="/signup"
-                          className={cn(
-                            buttonVariants({ variant: "default", size: "lg" })
-                          )}
+                          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
                         >
                           Sign up
                         </Link>
                       </>
                     )}
-                  </div>
+                  </motion.div>
                 </div>
               </SheetContent>
             </Sheet>
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

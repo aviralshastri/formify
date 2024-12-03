@@ -189,11 +189,21 @@ export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState("Home");
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
     const verifyToken = async () => {
+      setIsLoading(true); // Ensure loading starts at the beginning of verification
+
+      const token = Cookies.get("authToken");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
       try {
         const response = await axios.post(
           "http://192.168.1.8:8000/verify-token",
@@ -202,7 +212,9 @@ export default function Dashboard() {
             params: { token },
           }
         );
+
         if (response.data.status === "valid") {
+          setIsLoading(false); // Stop loading on success
           return;
         } else {
           Cookies.remove("authToken");
@@ -212,14 +224,12 @@ export default function Dashboard() {
         console.error("Token verification failed:", error);
         Cookies.remove("authToken");
         router.push("/login");
-
-        if (axios.isAxiosError(error)) {
-          console.error("Error response:", error.response?.data);
-        }
+      } finally {
+        setIsLoading(false); // Stop loading regardless of the outcome
       }
     };
 
-    setIsLoading(false);
+    verifyToken();
   }, [router]);
 
   const handleNavigate = (label: string) => {
@@ -232,13 +242,13 @@ export default function Dashboard() {
   };
 
   const confirmLogout = () => {
-    Cookies.set("authToken", "", { expires: 0 });
+    Cookies.remove("authToken");
     router.push("/login");
   };
 
   if (isLoading) {
     return (
-      <LoadingScreen heading="checking access" description="Almost there.." />
+      <LoadingScreen heading="Checking Access" description="Almost there..." />
     );
   }
 

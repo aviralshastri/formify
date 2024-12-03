@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import logo from "@/public/logo.png";
 
 const footerSections = [
@@ -43,30 +44,48 @@ const footerSections = [
 
 const Footer = () => {
   return (
-    <footer className="bg-white py-12 px-4 sm:px-6 lg:px-8">
+    <motion.footer 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="bg-white py-12 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
           {/* Logo and Company Info */}
-          <div className="col-span-1 lg:col-span-2 flex flex-col items-start space-y-4">
+          <motion.div 
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="col-span-1 lg:col-span-2 flex flex-col items-start space-y-4"
+          >
             <div className="flex items-center space-x-4">
-              <Image
-                src={logo}
-                width={50}
-                height={50}
-                alt="Asterforms Logo"
-                className="rounded-lg"
-              />
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Image
+                  src={logo}
+                  width={50}
+                  height={50}
+                  alt="Asterforms Logo"
+                  className="rounded-lg"
+                />
+              </motion.div>
               <h2 className="text-xl font-bold text-gray-900">Asterforms</h2>
             </div>
             <p className="text-sm text-gray-600">
               Simplifying form creation and management for businesses of all sizes.
             </p>
-          </div>
+          </motion.div>
 
           {/* Footer Sections */}
           {footerSections.map((section, index) => (
-            <div 
+            <motion.div 
               key={index} 
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: index * 0.2 }}
               className="col-span-1 lg:col-span-1"
             >
               <h3 className="text-sm font-semibold text-gray-900 mb-4">
@@ -74,7 +93,11 @@ const Footer = () => {
               </h3>
               <ul className="space-y-3">
                 {section.links.map((link, linkIndex) => (
-                  <li key={linkIndex}>
+                  <motion.li 
+                    key={linkIndex}
+                    whileHover={{ x: 5, color: '#3B82F6' }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
                     <Link 
                       href={link.href}
                       target={link.external ? '_blank' : undefined}
@@ -86,35 +109,42 @@ const Footer = () => {
                         <span className="sr-only"> (opens in a new tab)</span>
                       )}
                     </Link>
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <motion.div 
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
+        >
           <p className="text-sm text-gray-600">
             © {new Date().getFullYear()} Asterforms. All rights reserved.
           </p>
           <div className="flex space-x-4">
-            <Link 
-              href="/terms" 
-              className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-            >
-              Terms of Service
-            </Link>
-            <Link 
-              href="/privacy" 
-              className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
-            >
-              Privacy Policy
-            </Link>
+            {['Terms of Service', 'Privacy Policy'].map((text, index) => (
+              <motion.div
+                key={text}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link 
+                  href={index === 0 ? "/terms" : "/privacy"}
+                  className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
+                >
+                  {text}
+                </Link>
+              </motion.div>
+            ))}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </footer>
+    </motion.footer>
   );
 };
 

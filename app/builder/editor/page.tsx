@@ -422,7 +422,7 @@ export default function Editor() {
                 {" "}
                 <Link
                   href={"/"}
-                  className="flex items-center rounded-lg border-2 p-1"
+                  className="flex items-center rounded-lg border p-1"
                 >
                   <HomeIcon size={25} />
                 </Link>
@@ -437,7 +437,7 @@ export default function Editor() {
               <TooltipTrigger>
                 <Link
                   href={"/dashboard"}
-                  className="flex items-center rounded-lg border-2 p-1"
+                  className="flex items-center rounded-lg border p-1"
                 >
                   <LayoutDashboard size={25} />
                 </Link>
@@ -459,7 +459,7 @@ export default function Editor() {
         </div>
 
         <div
-          className={`items-center space-x-6 px-4 py-2 border rounded-lg ${
+          className={`items-center space-x-6 px-4 py-1 border rounded-lg ${
             isSelectionMode ? "hidden" : "flex"
           }`}
         >
@@ -475,7 +475,6 @@ export default function Editor() {
               </SheetHeader>
               <ScrollArea className="h-full mb-10">
                 <div className="flex flex-col py-4 space-y-4">
-                  {/* Basic Information */}
                   <div className="space-y-2">
                     <div>
                       <Label className="pl-1">Title</Label>
@@ -748,7 +747,6 @@ export default function Editor() {
               className="flex items-center gap-2"
             >
               <Trash2 className="h-4 w-4" />
-              Delete Selected
             </Button>
             <Button
               size="sm"
@@ -756,7 +754,6 @@ export default function Editor() {
               className="flex items-center gap-2"
             >
               <MousePointer2 className="h-4 w-4" />
-              Exit Selection
             </Button>
           </div>
         )}

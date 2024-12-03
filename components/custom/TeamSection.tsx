@@ -1,4 +1,8 @@
-import React from 'react';
+'use client'
+
+import React, { useRef } from 'react';
+import Image from 'next/image';
+import { motion, useInView } from 'framer-motion';
 import { 
   Card, 
   CardContent, 
@@ -7,11 +11,8 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Linkedin, 
-  Twitter, 
-  Github 
-} from "lucide-react";
+import { Linkedin, Twitter, Github } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 // Type definition for team member
 interface TeamMember {
@@ -57,8 +58,16 @@ const teamMembers: TeamMember[] = [
 ];
 
 const TeamSection: React.FC = () => {
+  const { theme } = useTheme();
+  const isDarkMode = theme === 'dark';
+
+  const headerRef = useRef(null);
+  const cardRef = useRef(null);
+  const headerInView = useInView(headerRef, { once: true, amount: 0.5 });
+  const cardInView = useInView(cardRef, { once: true, amount: 0.2 });
+
   // Safely get the first team member or provide a fallback
-  const founder = teamMembers[0] || {
+  const founder: TeamMember = teamMembers[0] || {
     name: "Founder",
     role: "Leadership",
     bio: "No information available",
@@ -68,25 +77,52 @@ const TeamSection: React.FC = () => {
   };
 
   return (
-    <section className="py-20 bg-white" id="team">
-      <div className="container">
-        <div className="flex w-full flex-col items-center">
+    <section className="py-20 bg-background" id="team">
+      <div className="container px-4 mx-auto">
+        <motion.div 
+          ref={headerRef}
+          className="flex w-full flex-col items-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={headerInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+        >
           {/* Header Section */}
           <div className="flex flex-col items-center space-y-4 text-center sm:space-y-6 md:max-w-3xl md:text-center mb-16">
-            <p className="text-sm text-muted-foreground uppercase tracking-wider">
+            <motion.p 
+              className="text-sm text-muted-foreground uppercase tracking-wider"
+              initial={{ opacity: 0 }}
+              animate={headerInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               MEET THE FOUNDER
-            </p>
-            <h2 className="text-3xl font-medium md:text-5xl">
+            </motion.p>
+            <motion.h2 
+              className="text-3xl font-medium md:text-5xl text-foreground"
+              initial={{ opacity: 0 }}
+              animate={headerInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
               Behind the Innovation
-            </h2>
-            <p className="text-muted-foreground md:max-w-2xl">
+            </motion.h2>
+            <motion.p 
+              className="text-muted-foreground md:max-w-2xl"
+              initial={{ opacity: 0 }}
+              animate={headerInView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
               A visionary leader driving the future of AI-powered form creation, 
               combining technical expertise with entrepreneurial spirit.
-            </p>
+            </motion.p>
           </div>
 
           {/* Team Member Card */}
-          <div className="w-full max-w-4xl">
+          <motion.div 
+            ref={cardRef}
+            className="w-full max-w-4xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={cardInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+          >
             <Card className="overflow-hidden shadow-lg">
               <div className="relative">
                 {/* Background Image */}
@@ -97,18 +133,26 @@ const TeamSection: React.FC = () => {
                       backgroundImage: `url('${founder.background}')`,
                       filter: 'grayscale(100%)'
                     }}
+                    aria-hidden="true"
                   />
                 )}
 
                 {/* Card Content */}
                 <div className="relative z-10 grid md:grid-cols-3">
                   {/* Profile Image */}
-                  <div className="md:col-span-1 flex items-center justify-center p-6">
+                  <motion.div 
+                    className="md:col-span-1 flex items-center justify-center p-6"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={cardInView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
                     <div className="relative">
-                      <img 
+                      <Image 
                         src={founder.avatar} 
-                        alt={founder.name} 
-                        className="w-64 h-64 object-cover rounded-full border-4 border-primary shadow-lg"
+                        alt={`Portrait of ${founder.name}`}
+                        width={256}
+                        height={256}
+                        className="object-cover rounded-full border-4 border-primary shadow-lg"
                       />
                       <Badge 
                         variant="default" 
@@ -117,65 +161,103 @@ const TeamSection: React.FC = () => {
                         Founder
                       </Badge>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Profile Details */}
                   <div className="md:col-span-2 p-8 flex flex-col justify-center">
                     <CardHeader className="p-0 mb-4">
-                      <CardTitle className="text-3xl mb-2">
-                        {founder.name}
-                      </CardTitle>
-                      <CardDescription className="text-lg">
-                        {founder.role}
-                      </CardDescription>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={cardInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                      >
+                        <CardTitle className="text-3xl mb-2 text-foreground">
+                          {founder.name}
+                        </CardTitle>
+                        <CardDescription className="text-lg">
+                          {founder.role}
+                        </CardDescription>
+                      </motion.div>
                     </CardHeader>
 
                     <CardContent className="p-0">
-                      <p className="text-muted-foreground mb-6">
+                      <motion.p 
+                        className="text-muted-foreground mb-6"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={cardInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.6, delay: 0.6 }}
+                      >
                         {founder.bio}
-                      </p>
+                      </motion.p>
 
                       {/* Expertise Badges */}
                       {founder.expertise.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-6">
+                        <motion.div 
+                          className="flex flex-wrap gap-2 mb-6"
+                          initial={{ opacity: 0 }}
+                          animate={cardInView ? { opacity: 1 } : {}}
+                          transition={{ duration: 0.6, delay: 0.8 }}
+                        >
                           {founder.expertise.map((skill, index) => (
-                            <Badge 
-                              key={index} 
-                              variant="secondary" 
-                              className="px-3 py-1"
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={cardInView ? { opacity: 1, scale: 1 } : {}}
+                              transition={{ 
+                                duration: 0.6, 
+                                delay: 0.8 + (index * 0.1) 
+                              }}
                             >
-                              {skill}
-                            </Badge>
+                              <Badge 
+                                variant="secondary" 
+                                className="px-3 py-1"
+                              >
+                                {skill}
+                              </Badge>
+                            </motion.div>
                           ))}
-                        </div>
+                        </motion.div>
                       )}
 
                       {/* Social Links */}
-                      <div className="flex space-x-4">
-                        {Object.entries(founder.socials).map(([platform, url]) => {
+                      <motion.div 
+                        className="flex space-x-4"
+                        initial={{ opacity: 0 }}
+                        animate={cardInView ? { opacity: 1 } : {}}
+                        transition={{ duration: 0.6, delay: 1.0 }}
+                      >
+                        {Object.entries(founder.socials).map(([platform, url], index) => {
                           const SocialIcon = socialIcons[platform as keyof typeof socialIcons];
                           
-                          return SocialIcon ? (
-                            <a
+                          return SocialIcon && url ? (
+                            <motion.a
                               key={platform}
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-muted-foreground hover:text-primary transition-colors"
-                              aria-label={`${platform} profile`}
+                              aria-label={`${founder.name}'s ${platform} profile`}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={cardInView ? { opacity: 1, y: 0 } : {}}
+                              transition={{ 
+                                duration: 0.6, 
+                                delay: 1.0 + (index * 0.1) 
+                              }}
                             >
                               <SocialIcon className="w-6 h-6" />
-                            </a>
+                            </motion.a>
                           ) : null;
                         })}
-                      </div>
+                      </motion.div>
                     </CardContent>
                   </div>
                 </div>
               </div>
             </Card>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
