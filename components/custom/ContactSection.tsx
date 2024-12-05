@@ -1,8 +1,6 @@
-"use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Mail, User, Send, Loader2, Phone } from 'lucide-react';
+import { Mail, User, Send, Loader2, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -65,22 +63,45 @@ const ContactSection = () => {
     setSubmissionStatus("loading");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const newCount = submissionCount + 1;
-      setSubmissionCount(newCount);
-      const currentDate = new Date().toISOString().split("T")[0];
-      localStorage.setItem("submissionCount", newCount.toString());
-      localStorage.setItem("lastSubmissionDate", currentDate);
-
-      toast.success("Message sent successfully!", {
-        duration: 3000,
-        position: "top-center",
+      const response = await fetch("http://192.168.1.8:8000/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
 
-      setFormData({ name: "", email: "", phone: "", message: "" });
+      const data = await response.json();
+
+      if (response.ok) {
+        const newCount = submissionCount + 1;
+        setSubmissionCount(newCount);
+        const currentDate = new Date().toISOString().split("T")[0];
+        localStorage.setItem("submissionCount", newCount.toString());
+        localStorage.setItem("lastSubmissionDate", currentDate);
+
+        
+
+        setFormData({ name: "", email: "", phone: "", message: "" });
+        if(data.message==="Too many pending requests for this email or phone number."){
+          toast.error(data.message, {
+            duration: 3000,
+            position: "top-center",
+          });
+        }
+        else{
+          toast.success("Message sent successfully!", {
+            duration: 3000,
+            position: "top-center",
+          });
+        }
+      } else {
+        throw new Error(
+          data?.message || "Something went wrong. Please try again."
+        );
+      }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.", {
+      toast.error(error.message, {
         duration: 3000,
         position: "top-center",
       });
@@ -103,7 +124,7 @@ const ContactSection = () => {
       />
 
       <div className="container">
-        <motion.div 
+        <motion.div
           ref={headerRef}
           className="flex w-full flex-col items-center"
           initial={{ opacity: 0, y: 20 }}
@@ -111,7 +132,7 @@ const ContactSection = () => {
           transition={{ duration: 0.6 }}
         >
           <div className="flex flex-col items-center space-y-4 text-center sm:space-y-6 md:max-w-3xl md:text-center">
-            <motion.p 
+            <motion.p
               className="text-sm text-muted-foreground"
               initial={{ opacity: 0 }}
               animate={headerInView ? { opacity: 1 } : {}}
@@ -119,7 +140,7 @@ const ContactSection = () => {
             >
               GET IN TOUCH
             </motion.p>
-            <motion.h2 
+            <motion.h2
               className="text-3xl font-medium md:text-5xl"
               initial={{ opacity: 0 }}
               animate={headerInView ? { opacity: 1 } : {}}
@@ -128,18 +149,19 @@ const ContactSection = () => {
               Contact Our Support Team
             </motion.h2>
 
-            <motion.p 
+            <motion.p
               className="text-muted-foreground md:max-w-2xl"
               initial={{ opacity: 0 }}
               animate={headerInView ? { opacity: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              We're here to help you with any questions or concerns. Fill out the form below, and we'll get back to you promptly.
+              We're here to help you with any questions or concerns. Fill out
+              the form below, and we'll get back to you promptly.
             </motion.p>
           </div>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           ref={formRef}
           className="mx-auto mt-20 max-w-4xl"
           initial={{ opacity: 0 }}
@@ -150,15 +172,15 @@ const ContactSection = () => {
             <CardContent className="p-0">
               <div className="flex flex-col lg:flex-row w-full">
                 <div className="hidden lg:flex flex-col items-center justify-center p-12 lg:w-1/3">
-                  <motion.div 
+                  <motion.div
                     className="space-y-6 text-center items-center justify-center flex flex-col"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={formInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ 
-                      duration: 0.6, 
-                      type: "spring", 
-                      stiffness: 260, 
-                      damping: 20 
+                    transition={{
+                      duration: 0.6,
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 20,
                     }}
                   >
                     <Image
@@ -182,36 +204,42 @@ const ContactSection = () => {
                 <div className="p-8 lg:w-2/3 w-full">
                   <form onSubmit={handleSubmit} className="space-y-4">
                     {[
-                      { 
-                        label: "Name", 
-                        name: "name", 
-                        type: "text", 
-                        placeholder: "John Doe", 
-                        icon: <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /> 
+                      {
+                        label: "Name",
+                        name: "name",
+                        type: "text",
+                        placeholder: "John Doe",
+                        icon: (
+                          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        ),
                       },
-                      { 
-                        label: "Email", 
-                        name: "email", 
-                        type: "email", 
-                        placeholder: "john@example.com", 
-                        icon: <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /> 
+                      {
+                        label: "Email",
+                        name: "email",
+                        type: "email",
+                        placeholder: "john@example.com",
+                        icon: (
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        ),
                       },
-                      { 
-                        label: "Phone Number", 
-                        name: "phone", 
-                        type: "tel", 
-                        placeholder: "+1 (555) 000-0000", 
-                        icon: <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /> 
-                      }
+                      {
+                        label: "Phone Number",
+                        name: "phone",
+                        type: "tel",
+                        placeholder: "+1 (555) 000-0000",
+                        icon: (
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        ),
+                      },
                     ].map((field, idx) => (
-                      <motion.div 
+                      <motion.div
                         key={field.name}
                         className="space-y-2"
                         initial={{ opacity: 0, y: 20 }}
                         animate={formInView ? { opacity: 1, y: 0 } : {}}
-                        transition={{ 
-                          duration: 0.6, 
-                          delay: 0.2 + idx * 0.1 
+                        transition={{
+                          duration: 0.6,
+                          delay: 0.2 + idx * 0.1,
                         }}
                       >
                         <Label htmlFor={field.name}>{field.label}</Label>
@@ -231,55 +259,37 @@ const ContactSection = () => {
                       </motion.div>
                     ))}
 
-                    <motion.div 
+                    <motion.div
                       className="space-y-2"
                       initial={{ opacity: 0, y: 20 }}
                       animate={formInView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ 
-                        duration: 0.6, 
-                        delay: 0.6 
-                      }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
                     >
                       <Label htmlFor="message">Message</Label>
-                      <Textarea
-                        id="message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        placeholder="Write your message here..."
-                        className="min-h-[150px] resize-none w-full"
-                        required
-                      />
+                      <div className="relative">
+                        <Textarea
+                          id="message"
+                          name="message"
+                          value={formData.message}
+                          onChange={handleChange}
+                          placeholder="Your message here..."
+                          rows={4}
+                          required
+                        />
+                      </div>
                     </motion.div>
 
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={formInView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ 
-                        duration: 0.6, 
-                        delay: 0.8 
-                      }}
+                    <Button
+                      type="submit"
+                      className="w-full mt-4"
+                      disabled={submissionStatus === "loading"}
                     >
-                      <Button
-                        type="submit"
-                        className="w-full"
-                        disabled={submissionStatus === "loading"}
-                      >
-                        {submissionStatus === "loading" ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Sending...
-                          </>
-                        ) : (
-                          <>
-                            <Send className="mr-2 h-4 w-4" />
-                            Send Message
-                          </>
-                        )}
-                      </Button>
-                    </motion.div>
+                      {submissionStatus === "loading" ? (
+                        <Loader2 className="animate-spin h-5 w-5" />
+                      ) : (
+                        "Send Message"
+                      )}
+                    </Button>
                   </form>
                 </div>
               </div>
