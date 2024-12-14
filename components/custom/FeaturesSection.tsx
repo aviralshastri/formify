@@ -85,12 +85,14 @@ const FeatureSection: React.FC = () => {
           {features.map((feature, idx) => (
             <motion.div
               key={idx}
-              className="flex flex-col justify-between rounded-lg bg-accent p-6 md:min-h-[300px] md:p-8"
+              className="flex flex-col justify-between rounded-lg bg-accent p-6 md:min-h-[300px] md:p-8 
+                border border-black/20 transition-all duration-300 
+                hover:border-black/40 hover:shadow-lg"
               initial={{ opacity: 0, y: 20 }}
               animate={featuresInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
             >
               <motion.span 
                 className="mb-6 flex size-11 items-center justify-center rounded-full bg-background"
@@ -127,4 +129,3 @@ const FeatureSection: React.FC = () => {
 };
 
 export default FeatureSection;
-

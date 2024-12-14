@@ -48,7 +48,7 @@ export default function Login() {
 
       try {
         const response = await axios.post(
-          "http://192.168.1.8:8000/verify-token",
+          "http://192.168.1.9:8000/verify-token",
           null,
           {
             params: { token },
@@ -74,7 +74,7 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await fetch("http://192.168.1.8:8000/login", {
+      const response = await fetch("http://192.168.1.9:8000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

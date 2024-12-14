@@ -41,7 +41,7 @@ export default function VerifyPhone() {
     setLoading(true);
     try {
       const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
-      const response = await fetch('http://192.168.1.8:8000/send-otp', {
+      const response = await fetch('http://192.168.1.9:8000/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -80,7 +80,7 @@ export default function VerifyPhone() {
     const enteredOTP = otp.join('');
     if (enteredOTP.length === 6) {
       try {
-        const response = await fetch('http://192.168.1.8:8000/verify-otp', {
+        const response = await fetch('http://192.168.1.9:8000/verify-otp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

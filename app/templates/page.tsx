@@ -65,7 +65,7 @@ export default function TemplatesPage() {
     const fetchTemplates = async () => {
       try {
         const response = await fetch(
-          "http://192.168.1.8:8000/get-templates?query=s"
+          "http://192.168.1.9:8000/get-templates?query=s"
         );
         const data = await response.json();
 

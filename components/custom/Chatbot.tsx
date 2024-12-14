@@ -53,7 +53,7 @@ export default function Chatbot() {
       setIsLoading(true);
 
       try {
-        const response = await axios.post("http://192.168.1.8:8000/chat", {
+        const response = await axios.post("http://192.168.1.9:8000/chat", {
           message: userMessage,
         });
         setMessages((prev) => [
